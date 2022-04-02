@@ -1,0 +1,7 @@
+{
+  "name": "Solar-System-sim",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
