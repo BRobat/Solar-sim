@@ -23,23 +23,21 @@ export class CanvasComponent implements OnInit {
 
   ngOnInit() {
     this.ctx = this.canvas.nativeElement.getContext('2d');
+    this.ctx.scale(2,2)
 
     this.initData();
 
+    this.requestFrame();
+  }
+
+  requestFrame(): void {
     window.requestAnimationFrame(() => {
       // check how to use it properly
       this.drawBackgroud();
       this.data.calculateNextFrame();
       this.draw2d();
-
+      this.requestFrame();
     })
-
-    setInterval(() => {
-      this.drawBackgroud();
-      this.data.calculateNextFrame();
-      this.draw2d();
-      // console.log(this.data)
-    }, 33)
   }
 
   initData(): void {
