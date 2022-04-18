@@ -4,6 +4,9 @@ import { Vector } from "../model/vector";
 
 export class HashUtils {
     static hashEntities(data: Data, t: number): void {
+        if (!data.entities || data.entities.length === 0) {
+            return;
+        }
 
         data.hashList = new Map()
 
@@ -19,19 +22,22 @@ export class HashUtils {
         })
     }
 
-    static getEntityHash(entity: Entity, t: number): Vector {
+    static getEntityHash(entity: Entity, t: number): string {
         const xp = Math.floor(entity.position.x / t);
         const yp = Math.floor(entity.position.y / t);
         const zp = Math.floor(entity.position.z / t);
 
-        return { x: xp, y: yp, z: zp } as Vector
+        return JSON.stringify({ x: xp, y: yp, z: zp })
     }
 
-    static getNearHashes(hash: Vector): Vector[] {
+    static getNearHashes(hash: string): string[] {
         const nearHashes = []
         for (let i = -1; i < 2; i++) {
             for (let j = -1; j < 2; j++) {
-                nearHashes.push({ x: hash.x + i, y: hash.y + i, z: hash.z + i } as Vector)
+                for (let k = -1; k < 2; k++) {
+                    let hashVector = JSON.parse(hash)
+                    nearHashes.push(JSON.stringify({ x: hashVector.x + i, y: hashVector.y + j, z: hashVector.z + k }))
+                }
             }
         }
         return nearHashes

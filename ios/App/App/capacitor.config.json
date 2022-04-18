@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Solar-System-sim",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

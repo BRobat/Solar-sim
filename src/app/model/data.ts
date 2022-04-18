@@ -7,12 +7,15 @@ import { Vector } from "./vector";
 
 export class Data {
     entities: Entity[];
-    hashList: Map<Vector, number[]>;
+    hashList: Map<string, number[]>;
 
     time: number;
 
+    hashThreshold: number
+
     constructor() {
         this.time = 0;
+        this.hashThreshold = 50;
     }
 
     calculateNextFrame(): void {
@@ -24,20 +27,35 @@ export class Data {
     }
 
     addEntity(newEntity: Entity): void {
-        this.entities.push(newEntity);
+        if (!this.entities || this.entities.length === 0) {
+            this.entities = [newEntity];
+        } else {
+            this.entities.push(newEntity);
+        }
+    }
+
+    generateProtoDisk(): void {
+
     }
 
     hashEntities(): void {
-        this.hashList.clear();
-        HashUtils.hashEntities(this, 1e10);
+        if (this.hashList) {
+            this.hashList.clear();
+        }
+        HashUtils.hashEntities(this, this.hashThreshold);
     }
 
     calculateForces(): void {
         // distinguish smaller objects later
+        if (!this.entities || this.entities.length === 0) {
+            return;
+        }
         this.entities.forEach((e1: Entity) => {
             let forceSuperposition = { x: 0, y: 0, z: 0 } as Vector;
             this.entities.forEach((e2: Entity) => {
-                forceSuperposition = Calculus.superposition(forceSuperposition, Physics.calculateAttractiveForce(e1, e2));
+                if (e1 != e2) {
+                    forceSuperposition = Calculus.superposition(forceSuperposition, Physics.calculateAttractiveForce(e1, e2));
+                }
             })
             e1.force = forceSuperposition;
             e1.updateSpeed();
@@ -45,6 +63,9 @@ export class Data {
     }
 
     moveEntities(): void {
+        if (!this.entities || this.entities.length === 0) {
+            return;
+        }
         this.entities.forEach((entity: Entity) => {
             entity.move();
         })
@@ -52,24 +73,30 @@ export class Data {
 
     collideEntities(): void {
         // checks collisions and applies merges
-        this.entities.forEach((e1: Entity) => {
-            const eHash = HashUtils.getEntityHash(e1,1e10)
+        if (!this.entities || this.entities.length === 0) {
+            return;
+        }
+        this.entities.forEach((e1: Entity, j) => {
+            const eHash = HashUtils.getEntityHash(e1, this.hashThreshold)
             const allHashes = HashUtils.getNearHashes(eHash).concat([eHash]);
-            const indexes = [];
-            const toDestroyIndexes = []
-            allHashes.forEach((hashKey: Vector) => {
+            let indexes = [];
+            let toDestroyIndexes = []
+            allHashes.forEach((hashKey: string) => {
                 const hash = this.hashList.get(hashKey);
-                indexes.concat(hash);
+                if (hash && hash.length !== 0) {
+                    indexes = indexes.concat(hash);
+                }
             })
+            indexes = [...new Set(indexes)]
             indexes.forEach((i: number) => {
                 const newEntity = CollisionDetection.checkCollision(e1, this.entities[i])
                 if (newEntity) {
-                    e1 = {...newEntity} as Entity;
-                    toDestroyIndexes.push(i);
+                    e1.mass = newEntity.mass;
+                    e1.position = newEntity.position;
+                    e1.speed = newEntity.speed;
+                    e1.diameter = newEntity.diameter;
+                    this.entities.splice(i, 1);
                 }
-            })
-            toDestroyIndexes.forEach((i: number) => {
-                this.entities.splice(i,1);
             })
         })
 
