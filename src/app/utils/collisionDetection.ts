@@ -4,6 +4,9 @@ import { Physics } from "./physics";
 
 export class CollisionDetection {
     static checkCollision(e1: Entity, e2: Entity): Entity {
+        if (e1 == e2 || !e1 || !e2) {
+            return;
+        }
         const dist = Calculus.cartesianDistance(e1.position, e2.position);
         if (dist <= e1.diameter + e2.diameter) {
             // return entity that'a a superposition of entities

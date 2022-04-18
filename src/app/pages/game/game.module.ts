@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { GamePageRoutingModule } from './game-routing.module';
 
 import { GamePage } from './game.page';
+import { CanvasComponent } from 'src/app/components/canvas/canvas.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,10 @@ import { GamePage } from './game.page';
     IonicModule,
     GamePageRoutingModule
   ],
-  declarations: [GamePage]
+  exports: [
+
+  ],
+  declarations: [GamePage,
+    CanvasComponent]
 })
-export class GamePageModule {}
+export class GamePageModule { }
