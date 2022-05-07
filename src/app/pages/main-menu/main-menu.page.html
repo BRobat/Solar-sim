@@ -1,9 +1,30 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
-    <ion-title>main-menu</ion-title>
+    
+    <ion-title>main menu</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
-<ion-content>
-  <button class="sn-btn sn-extra-margin" routerLink="../game"> Simulation </button>
+<ion-content fullscreen="true">
+  <!-- <button class="sn-btn sn-extra-margin" > Simulation </button> -->
+
+  <ion-card-title class="gs-container gs-spacer-top">
+    <div>
+      SOLAR SYSTEM
+      <br>
+      SIMULATOR
+    </div>
+  </ion-card-title>
+  <div class="gs-container gs-spacer-top">
+    <ion-button class="gs-btn gs-btn-lg" color="background" routerLink="../game"> New System</ion-button>
+  
+    <ion-button class="gs-btn gs-btn-lg" color="background" routerLink="../load">Load</ion-button>
+  
+    <ion-button class="gs-btn gs-btn-lg" color="background" routerLink="../config">Config</ion-button>
+  
+    <ion-button class="gs-btn gs-btn-lg" color="background" routerLink="../info">Info</ion-button>
+  
+    <ion-button class="gs-btn gs-btn-lg" color="background" routerLink="../credits">Credits</ion-button>
+  </div>
+
 </ion-content>
