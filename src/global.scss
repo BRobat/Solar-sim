@@ -29,37 +29,19 @@ ion-content {
     --overflow: hidden;
 }
 
-ion-button {
-    --border-color: rgb(255,255,255);
+.gs-container {
+    display: flex;
+    flex-direction: column;
 }
 
-.gs-btn {
-    border: 3px solid white;
-    border-radius: 15px;
-    background-color: black;
+.gs-btn-sm {
+    margin: 0px;
+}
+
+.gs-btn-md {
+    margin: 10px;
 }
 
 .gs-btn-lg {
-    width: 70vw;
-    margin-top: 1em;
-}
-
-.gs-btn-md {}
-
-.gs-btn-sm {}
-
-.gs-top-nav {}
-
-.gs-side-nav {}
-
-.gs-container {
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.gs-spacer-top {
-    margin-top: 5em;
+    margin: 20px;
 }
