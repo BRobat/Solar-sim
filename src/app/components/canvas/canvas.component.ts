@@ -23,11 +23,14 @@ export class CanvasComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.canvas.nativeElement.width = window.innerWidth;
+    this.canvas.nativeElement.height = window.innerHeight;
+    console.log(this.canvas)
+
+
     this.ctx = this.canvas.nativeElement.getContext('2d');
     this.ctx.scale(2, 2)
 
-    this.canvas.nativeElement.width = window.innerWidth;
-    this.canvas.nativeElement.height = window.innerHeight;
 
     this.initData();
 
@@ -47,7 +50,7 @@ export class CanvasComponent implements OnInit {
   initData(): void {
     this.data = new Data();
     for (let i = 0; i < 1000; i++) {
-      this.data.addEntity(new Entity(Math.random() * 50, { x: Math.random() * 800, y: Math.random() * 800, z: 0 } as Vector, { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5), z: 0 } as Vector, ''))
+      this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5), z: 0 } as Vector, ''))
     }
     // this.data.addEntity(new Entity(5000, { x: window.innerHeight / 2, y: window.innerWidth / 2, z: 0 } as Vector, { x: 0, y: 0, z: 0 } as Vector, ''))
   }
@@ -60,7 +63,7 @@ export class CanvasComponent implements OnInit {
     // const gamma = 1e10
     this.data.entities.forEach((e: Entity) => {
       this.ctx.beginPath();
-      this.ctx.fillStyle = 'rgb('+ (e.mass) / 300 + ',' + 0 + ',' + (100 + e.position.z) + ')';
+      this.ctx.fillStyle = 'rgb(' + (e.mass) / 300 + ',' + 0 + ',' + (100 + e.position.z) + ')';
       this.ctx.lineWidth = 3
       this.ctx.arc(
         e.position.x,
