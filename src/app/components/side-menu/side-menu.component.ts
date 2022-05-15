@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SideMenuService } from 'src/app/services/side-menu.service';
 
 @Component({
   selector: 'app-side-menu',
@@ -7,10 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SideMenuComponent implements OnInit {
 
-  menuButtonColor = 'primary'
+  menuButtonColor = 'primary';
   menuButton = false;
 
-  constructor() { }
+  panButtonColor = 'primary';
+  panButton = false;
+
+  constructor(private sideMenuService: SideMenuService) { }
 
   ngOnInit() {}
 
