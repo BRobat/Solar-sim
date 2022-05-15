@@ -7,8 +7,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SideMenuComponent implements OnInit {
 
+  menuButtonColor = 'primary'
+  menuButton = false;
+
   constructor() { }
 
   ngOnInit() {}
+
+  toggleMenuButton(): void {
+    if (this.menuButton) {
+      this.menuButtonColor = 'primary'
+    } else {
+      this.menuButtonColor = 'secondary'
+    }
+    this.menuButton = !this.menuButton;
+  }
 
 }
