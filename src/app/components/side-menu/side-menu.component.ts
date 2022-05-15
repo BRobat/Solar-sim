@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SideMenuService } from 'src/app/services/side-menu.service';
 
 @Component({
   selector: 'app-side-menu',
@@ -7,8 +8,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SideMenuComponent implements OnInit {
 
-  constructor() { }
+  menuButtonColor = 'primary';
+  menuButton = false;
+
+  panButtonColor = 'primary';
+  panButton = false;
+
+  constructor(private sideMenuService: SideMenuService) { }
 
   ngOnInit() {}
+
+  toggleMenuButton(): void {
+    if (this.menuButton) {
+      this.menuButtonColor = 'primary'
+    } else {
+      this.menuButtonColor = 'secondary'
+    }
+    this.menuButton = !this.menuButton;
+  }
 
 }
