@@ -2,7 +2,7 @@
   <ion-button *ngIf="menuButton" slot="fixed">
     <ion-icon name="pause-outline"></ion-icon>
   </ion-button>
-  <ion-button *ngIf="menuButton" slot="fixed">
+  <ion-button *ngIf="menuButton" slot="fixed" color="{{panButtonColor}}" (click)="togglePanButton()">
     <ion-icon name="expand-outline"></ion-icon>
   </ion-button>
   <ion-button slot="fixed" color="{{menuButtonColor}}" (click)="toggleMenuButton()">
