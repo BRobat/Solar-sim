@@ -29,6 +29,14 @@ export class Calculus {
         } as Vector
     }
 
+    static antySuperposition(v1: Vector, v2: Vector): Vector {
+        return {
+            x: v1.x - v2.x,
+            y: v1.y - v2.y,
+            z: v1.z - v2.z
+        } as Vector
+    }
+
     static module(x: number): number {
         return x > 0 ? x : -x;
     }

@@ -27,4 +27,14 @@ export class SideMenuComponent implements OnInit {
     this.menuButton = !this.menuButton;
   }
 
+  togglePanButton(): void {
+    if (this.panButton) {
+      this.panButtonColor = 'primary'
+    } else {
+      this.panButtonColor = 'secondary'
+    }
+    this.panButton = !this.panButton;
+    this.sideMenuService.controlConfig.enablePan = this.panButton;
+  }
+
 }
