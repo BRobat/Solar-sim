@@ -63,17 +63,20 @@ export class CanvasComponent implements OnInit {
 
   initData(): void {
     this.data = new Data();
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100; i++) {
       this.data.addEntity(new Entity(Math.random() * 30,
         {
           x: Math.random() * window.innerWidth / 2,
+          // y: 0,
           y: Math.random() * window.innerHeight / 2,
           z: Math.random() * window.innerWidth / 2
         } as Vector,
         {
           x: (Math.random() - 0.5) * 3,
+          // y: 0,
           y: (Math.random() - 0.5) * 3,
           z: (Math.random() - 0.5) * 3
+          // z: 0
         } as Vector,
         ''))
       // this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: (Math.random() - 0.5) * 2 } as Vector, ''))
@@ -129,7 +132,10 @@ export class CanvasComponent implements OnInit {
     
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
       this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.x, y: event.y, z: 0 } as Vector, this.controlConfig.tempMousePos);
-      this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
+      // this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
+      this.camera.pitch += this.controlConfig.mousePos.x / 10000
+      this.camera.yaw += this.controlConfig.mousePos.y / 10000
+      // console.log(this.camera)
     }
   }
 
@@ -148,6 +154,8 @@ export class CanvasComponent implements OnInit {
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
       this.controlConfig.mousePos = Calculus.antySuperposition({x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0} as Vector, this.controlConfig.tempMousePos);
       this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
+      this.camera.pitch += this.controlConfig.mousePos.x / 10000
+      this.camera.yaw += this.controlConfig.mousePos.y / 10000
     }
   }
 

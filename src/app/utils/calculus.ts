@@ -1,3 +1,4 @@
+import { Matrix3 } from "../model/matrix3";
 import { Vector } from "../model/vector";
 
 export class Calculus {
@@ -39,5 +40,35 @@ export class Calculus {
 
     static module(x: number): number {
         return x > 0 ? x : -x;
+    }
+
+    static rotationMatrix(yaw: number, pitch: number, roll: number): Matrix3 {
+        return {
+            aa: Math.cos(pitch) * Math.cos(roll),
+            ab: Math.sin(yaw) * Math.sin(pitch) * Math.cos(roll - Math.cos(yaw) * Math.sin(roll)),
+            ac: Math.cos(yaw) * Math.sin(pitch) * Math.cos(roll) + Math.sin(yaw) * Math.sin(roll),
+
+            ba: Math.cos(pitch) * Math.sin(roll),
+            bb: Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll) + Math.cos(yaw) * Math.cos(roll),
+            bc: Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll) - Math.sin(yaw) * Math.cos(roll),
+
+            ca: 0 - Math.sin(pitch),
+            cb: Math.sin(yaw) * Math.cos(pitch),
+            cc: Math.cos(yaw) * Math.cos(pitch)
+        } as Matrix3
+    }
+
+    static vectorXMatrix3(v: Vector, m: Matrix3): Vector {
+        v.x = (m.aa + m.ba + m.ca) * v.x
+        v.y = (m.ab + m.bb + m.cb) * v.y
+        v.z = (m.ac + m.bc + m.cc) * v.z
+        return v as Vector;
+    }
+
+    static matrix3XVector(v: Vector, m: Matrix3): Vector {
+        v.x = m.aa * v.x + m.ab * v.y + m.ac * v.z
+        v.y = m.ba * v.x + m.bb * v.y + m.bc * v.z
+        v.z = m.ca * v.x + m.cb * v.y + m.cc * v.z
+        return v as Vector;
     }
 }

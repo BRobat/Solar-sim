@@ -17,15 +17,19 @@ export class GraphicEngineOne {
             ctx.fillStyle = 'rgb(' + (e.mass) / 30 + ',' + 0 + ',' + (100) + ')';
             ctx.lineWidth = 3
 
-            let rx = camera.position.x - e.position.x;
-            let ry = camera.position.y - e.position.y;
-            let rz = camera.position.z - e.position.z;
+            let vec = {
+                x: camera.position.x - e.position.x,
+                y: camera.position.y - e.position.y,
+                z: camera.position.z - e.position.z
+            } as Vector;
+
+            vec = Calculus.matrix3XVector(vec,Calculus.rotationMatrix(camera.yaw,camera.pitch,camera.roll));
 
 
-            const px = ((Math.tan(camera.angleOfView) * ((rx) / (rz))) * ctx.canvas.width / 4) + ctx.canvas.width / 4;
-            const py = ((Math.tan(camera.angleOfView) * ((ry) / (rz))) * ctx.canvas.height / 4) + ctx.canvas.height / 4;
+            const px = ((Math.tan(camera.angleOfView) * ((vec.x) / (vec.z))) * ctx.canvas.width / 4) + ctx.canvas.width / 4;
+            const py = ((Math.tan(camera.angleOfView) * ((vec.y) / (vec.z))) * ctx.canvas.height / 4) + ctx.canvas.height / 4;
             // taht needs to be changed
-            const pd = e.diameter * (50 / Math.sqrt(rz));
+            const pd = e.diameter * (50 / Math.sqrt(vec.z));
             ctx.arc(
                 px,
                 py,
