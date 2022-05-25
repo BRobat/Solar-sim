@@ -14,6 +14,9 @@ export class SideMenuComponent implements OnInit {
   panButtonColor = 'primary';
   panButton = false;
 
+  rotationButtonColor = 'primary';
+  rotationButton = false;
+
   constructor(private sideMenuService: SideMenuService) { }
 
   ngOnInit() {}
@@ -35,6 +38,16 @@ export class SideMenuComponent implements OnInit {
     }
     this.panButton = !this.panButton;
     this.sideMenuService.controlConfig.enablePan = this.panButton;
+  }
+
+  toggleRotationButton(): void {
+    if (this.rotationButton) {
+      this.rotationButtonColor = 'primary'
+    } else {
+      this.rotationButtonColor = 'secondary'
+    }
+    this.rotationButton = !this.rotationButton;
+    this.sideMenuService.controlConfig.enableRotation = this.rotationButton;
   }
 
 }

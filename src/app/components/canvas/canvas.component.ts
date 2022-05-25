@@ -81,7 +81,7 @@ export class CanvasComponent implements OnInit {
         ''))
       // this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: (Math.random() - 0.5) * 2 } as Vector, ''))
     }
-    // this.data.addEntity(new Entity(5000, { x: window.innerWidth / 4, y: window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: 0 } as Vector, ''))
+    this.data.addEntity(new Entity(5000, { x: window.innerWidth / 4, y: window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: 0 } as Vector, ''))
   }
 
   initCamera(): void {
@@ -101,6 +101,7 @@ export class CanvasComponent implements OnInit {
     if (!this.data.entities || this.data.entities.length === 0 || !this.camera) {
       return;
     }
+    this.camera.updatePosition();
     GraphicEngineOne.drawScene(this.data, this.camera, this.ctx)
 
   }
@@ -113,9 +114,9 @@ export class CanvasComponent implements OnInit {
   }
 
   cameraFollowCenter(): void {
+    this.camera.pivot = Physics.getMassCenter(this.data.entities);
     if (!this.controlConfig.enablePan) {
-      this.camera.position = Physics.getMassCenter(this.data.entities);
-      this.camera.position.z = window.innerHeight;
+      // this.camera.position.z = window.innerHeight;
     }
   }
 
@@ -133,9 +134,9 @@ export class CanvasComponent implements OnInit {
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
       this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.x, y: event.y, z: 0 } as Vector, this.controlConfig.tempMousePos);
       // this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
-      this.camera.pitch += this.controlConfig.mousePos.x / 10000
+      // this.camera.roll += this.controlConfig.mousePos.x / 10000
       this.camera.yaw += this.controlConfig.mousePos.y / 10000
-      // console.log(this.camera)
+      console.log(this.camera)
     }
   }
 

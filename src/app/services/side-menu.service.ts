@@ -12,6 +12,7 @@ export class SideMenuService {
   constructor() {
     this.controlConfig = {
       enablePan: false,
+      enableRotation: false,
       mouseDown: false,
       tempMousePos: { x: 0, y: 0, z: 0 } as Vector,
       mousePos: { x: 0, y: 0, z: 0 } as Vector,

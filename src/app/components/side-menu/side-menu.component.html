@@ -1,5 +1,5 @@
 <div class="custom-position">
-  <ion-button *ngIf="menuButton" slot="fixed">
+  <ion-button *ngIf="menuButton" slot="fixed" color="{{rotationButtonColor}}" (click)="toggleRotationButton()">
     <ion-icon name="pause-outline"></ion-icon>
   </ion-button>
   <ion-button *ngIf="menuButton" slot="fixed" color="{{panButtonColor}}" (click)="togglePanButton()">

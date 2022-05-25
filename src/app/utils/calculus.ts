@@ -58,6 +58,22 @@ export class Calculus {
         } as Matrix3
     }
 
+    static taitBryanRotationMatrix(yaw: number, pitch: number, roll: number): Matrix3 {
+        return {
+            aa: Math.cos(pitch) * Math.cos(roll),
+            ab: -Math.cos(pitch) * Math.sin(roll),
+            ac: Math.sin(pitch),
+
+            ba: Math.cos(yaw) * Math.sin(roll) + Math.cos(roll) * Math.sin(yaw) * Math.sin(pitch),
+            bb: Math.cos(yaw) * Math.cos(roll) - Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll),
+            bc: -Math.cos(pitch) * Math.sin(yaw),
+
+            ca: Math.sin(yaw) * Math.sin(roll) - Math.cos(yaw) * Math.cos(roll) * Math.sin(pitch),
+            cb: Math.cos(roll) * Math.sin(yaw) + Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll),
+            cc: Math.cos(yaw) * Math.cos(pitch)
+        } as Matrix3;
+    }
+
     static vectorXMatrix3(v: Vector, m: Matrix3): Vector {
         v.x = (m.aa + m.ba + m.ca) * v.x
         v.y = (m.ab + m.bb + m.cb) * v.y
