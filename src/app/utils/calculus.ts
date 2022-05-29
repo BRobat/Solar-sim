@@ -37,6 +37,14 @@ export class Calculus {
         } as Vector
     }
 
+    static MultiplyVectorXScalar(v: Vector, s: number): Vector {
+        return {
+            x: v.x * s,
+            y: v.y * s,
+            z: v.z * s
+        } as Vector
+    }
+
     static module(x: number): number {
         return x > 0 ? x : -x;
     }
