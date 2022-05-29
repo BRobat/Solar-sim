@@ -74,6 +74,23 @@ export class Calculus {
         } as Matrix3;
     }
 
+    static matrix3Transpose(m: Matrix3): Matrix3 {
+        return {
+            aa: m.aa,
+            ab: m.ba,
+            ac: m.ca,
+
+            ba: m.ab,
+            bb: m.bb,
+            bc: m.cb,
+
+            ca: m.ac,
+            cb: m.bc,
+            cc: m.cc,
+        } as Matrix3
+
+    }
+
     static vectorXMatrix3(v: Vector, m: Matrix3): Vector {
         v.x = (m.aa + m.ba + m.ca) * v.x
         v.y = (m.ab + m.bb + m.cb) * v.y

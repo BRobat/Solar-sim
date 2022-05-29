@@ -23,7 +23,7 @@ export class GraphicEngineOne {
                 z: camera.position.z - e.position.z
             } as Vector;
 
-            vec = Calculus.matrix3XVector(vec,Calculus.rotationMatrix(camera.yaw,camera.pitch,camera.roll));
+            vec = Calculus.matrix3XVector(vec,Calculus.rotationMatrix(camera.pitch,camera.yaw,camera.roll));
 
 
             const px = ((Math.tan(camera.angleOfView) * ((vec.x) / (vec.z))) * ctx.canvas.width / 4) + ctx.canvas.width / 4;

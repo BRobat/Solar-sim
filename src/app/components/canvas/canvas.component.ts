@@ -134,8 +134,9 @@ export class CanvasComponent implements OnInit {
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
       this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.x, y: event.y, z: 0 } as Vector, this.controlConfig.tempMousePos);
       // this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
-      // this.camera.roll += this.controlConfig.mousePos.x / 10000
-      this.camera.yaw += this.controlConfig.mousePos.y / 10000
+      this.camera.phi += this.controlConfig.mousePos.x / 10000
+      this.camera.theta -= this.controlConfig.mousePos.y / 10000
+      // this.camera.yaw += this.controlConfig.mousePos.y / 10000
       console.log(this.camera)
     }
   }
