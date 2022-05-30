@@ -133,7 +133,7 @@ export class CanvasComponent implements OnInit {
 
 
       GraphicEngineOne.throwEntity(100,
-        { x: event.x, y: event.y, z: 0} as Vector,
+        this.controlConfig.tempMousePos,
         Calculus.antySuperposition({ x: event.x, y: event.y, z: 0 } as Vector, this.controlConfig.tempMousePos),
         this.data,
         this.camera,
@@ -159,6 +159,14 @@ export class CanvasComponent implements OnInit {
 
 
   touchup(event): void {
+    if (this.controlConfig.mouseDown && this.controlConfig.throwMode) {
+      GraphicEngineOne.throwEntity(100,
+        this.controlConfig.tempMousePos,
+        Calculus.antySuperposition({ x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector, this.controlConfig.tempMousePos),
+        this.data,
+        this.camera,
+        this.ctx)
+    }
     this.controlConfig.mouseDown = false;
   }
 
