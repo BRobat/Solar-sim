@@ -160,7 +160,7 @@ export class CanvasComponent implements OnInit {
 
 
   touchup(event): void {
-    if (this.controlConfig.mouseDown && this.controlConfig.throwMode) {
+    if (this.controlConfig.mouseDown && this.controlConfig.throwMode && event.touches[0].clientX < window.innerWidth - UsefulConsts.SIDE_MENU_WIDTH) {
       GraphicEngineOne.throwEntity(100,
         this.controlConfig.tempMousePos,
         Calculus.antySuperposition({ x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector, this.controlConfig.tempMousePos),

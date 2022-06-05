@@ -49,9 +49,11 @@ export class SideMenuComponent implements OnInit {
   toggleThrowButton(): void {
     if (this.throwButton) {
       this.throwButtonColor = 'primary'
-      
     } else {
       this.throwButtonColor = 'secondary'
+      if (this.panButton) {
+        this.togglePanButton();
+      }
     }
     this.throwButton = !this.throwButton;
     this.sideMenuService.controlConfig.throwMode = this.throwButton;
@@ -101,6 +103,10 @@ export class SideMenuComponent implements OnInit {
         break;
     }
     this.sideMenuService.controlConfig.dt = this.speed;
+  }
+
+  editThrow() {
+    console.log('ddd')
   }
 
 }
