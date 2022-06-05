@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { UsefulConsts } from 'src/app/consts/usefulConsts';
 import { Camera } from 'src/app/model/camera';
 import { ControlConfig } from 'src/app/model/configs/controlConfig';
 import { Data } from 'src/app/model/data';
@@ -65,20 +66,20 @@ export class CanvasComponent implements OnInit {
 
   initData(): void {
     this.data = new Data();
-    for (let i = 0; i < 2; i++) {
-      this.data.addEntity(new Entity(500,
-        {
-          x: window.innerWidth / 2 + (100 * i),
-          y: window.innerHeight / 2,
-          z: 0.1
-        } as Vector,
-        {
-          x: (0.5 * i),
-          y: 0,
-          z: 0
-        } as Vector,
-        ''))
-      // this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: (Math.random() - 0.5) * 2 } as Vector, ''))
+    for (let i = 0; i < 1; i++) {
+      // this.data.addEntity(new Entity(500,
+      //   {
+      //     x: window.innerWidth / 2 + (100 * i),
+      //     y: window.innerHeight / 2,
+      //     z: 0.1
+      //   } as Vector,
+      //   {
+      //     x: (0.5 * i),
+      //     y: 0,
+      //     z: 0
+      //   } as Vector,
+      //   ''))
+      this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: (Math.random() - 0.5) * 2 } as Vector, ''))
     }
     // this.data.addEntity(new Entity(5000, { x: window.innerWidth / 4, y: window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: 0 } as Vector, ''))
   }
@@ -129,7 +130,7 @@ export class CanvasComponent implements OnInit {
   }
 
   mouseup(event): void {
-    if (this.controlConfig.mouseDown && this.controlConfig.throwMode) {
+    if (this.controlConfig.mouseDown && this.controlConfig.throwMode && event.x < window.innerWidth - UsefulConsts.SIDE_MENU_WIDTH) {
 
 
       GraphicEngineOne.throwEntity(100,
