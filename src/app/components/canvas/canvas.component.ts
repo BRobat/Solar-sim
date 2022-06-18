@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { UsefulConsts } from 'src/app/consts/usefulConsts';
 import { Camera } from 'src/app/model/camera';
 import { ControlConfig } from 'src/app/model/configs/controlConfig';
 import { Data } from 'src/app/model/data';
@@ -51,8 +52,10 @@ export class CanvasComponent implements OnInit {
   requestFrame(): void {
     window.requestAnimationFrame(() => {
       // check how to use it properly
+      if (!this.controlConfig.pause) {
+        this.data.calculateNextFrame(this.controlConfig.dt);
+      }
       this.drawBackgroud();
-      this.data.calculateNextFrame();
       this.cameraFollowCenter();
       this.draw2d();
 
@@ -63,20 +66,20 @@ export class CanvasComponent implements OnInit {
 
   initData(): void {
     this.data = new Data();
-    for (let i = 0; i < 1000; i++) {
-      this.data.addEntity(new Entity(Math.random() * 30,
-        {
-          x: Math.random() * window.innerWidth / 2,
-          y: Math.random() * window.innerHeight / 2,
-          z: Math.random() * window.innerWidth / 2
-        } as Vector,
-        {
-          x: (Math.random() - 0.5) * 3,
-          y: (Math.random() - 0.5) * 3,
-          z: (Math.random() - 0.5) * 3
-        } as Vector,
-        ''))
-      // this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: (Math.random() - 0.5) * 2 } as Vector, ''))
+    for (let i = 0; i < 1; i++) {
+      // this.data.addEntity(new Entity(500,
+      //   {
+      //     x: window.innerWidth / 2 + (100 * i),
+      //     y: window.innerHeight / 2,
+      //     z: 0.1
+      //   } as Vector,
+      //   {
+      //     x: (0.5 * i),
+      //     y: 0,
+      //     z: 0
+      //   } as Vector,
+      //   ''))
+      this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: (Math.random() - 0.5) * 2 } as Vector, ''))
     }
     // this.data.addEntity(new Entity(5000, { x: window.innerWidth / 4, y: window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: 0 } as Vector, ''))
   }
@@ -116,17 +119,33 @@ export class CanvasComponent implements OnInit {
     }
   }
 
+  addEntity() {
+
+  }
+
   mousedown(event): void {
     this.controlConfig.mouseDown = true;
     this.controlConfig.tempMousePos = { x: event.x, y: event.y, z: 0 } as Vector;
     this.controlConfig.virtualCamPos = this.camera.position;
   }
+
   mouseup(event): void {
+    if (this.controlConfig.mouseDown && this.controlConfig.throwMode && event.x < window.innerWidth - UsefulConsts.SIDE_MENU_WIDTH) {
+
+
+      GraphicEngineOne.throwEntity(100,
+        this.controlConfig.tempMousePos,
+        Calculus.antySuperposition({ x: event.x, y: event.y, z: 0 } as Vector, this.controlConfig.tempMousePos),
+        this.data,
+        this.camera,
+        this.ctx)
+    }
     this.controlConfig.mouseDown = false;
+
   }
 
   mousemove(event): void {
-    
+
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
       this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.x, y: event.y, z: 0 } as Vector, this.controlConfig.tempMousePos);
       this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
@@ -135,18 +154,26 @@ export class CanvasComponent implements OnInit {
 
   touchdown(event): void {
     this.controlConfig.mouseDown = true;
-    this.controlConfig.tempMousePos = {x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0} as Vector;
+    this.controlConfig.tempMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector;
     this.controlConfig.virtualCamPos = this.camera.position;
   }
 
 
   touchup(event): void {
+    if (this.controlConfig.mouseDown && this.controlConfig.throwMode && event.touches[0].clientX < window.innerWidth - UsefulConsts.SIDE_MENU_WIDTH) {
+      GraphicEngineOne.throwEntity(100,
+        this.controlConfig.tempMousePos,
+        Calculus.antySuperposition({ x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector, this.controlConfig.tempMousePos),
+        this.data,
+        this.camera,
+        this.ctx)
+    }
     this.controlConfig.mouseDown = false;
   }
 
   touchmove(event): void {
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
-      this.controlConfig.mousePos = Calculus.antySuperposition({x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0} as Vector, this.controlConfig.tempMousePos);
+      this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector, this.controlConfig.tempMousePos);
       this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
     }
   }

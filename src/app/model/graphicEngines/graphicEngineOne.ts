@@ -35,4 +35,14 @@ export class GraphicEngineOne {
             ctx.fill();
         })
     }
+
+    static throwEntity(mass: number, event: Vector, throwVector: Vector, data: Data, camera: Camera, ctx: any): void {
+        const x = -((-ctx.canvas.width + 2 * event.x) / (Math.tan(camera.angleOfView) * ctx.canvas.width) * camera.position.z - camera.position.x)
+        const y = -((-ctx.canvas.height + 2 * event.y) / (Math.tan(camera.angleOfView) * ctx.canvas.height) * camera.position.z - camera.position.y)
+        const entity = new Entity(mass,
+            { x: x, y: y, z: 0.01 } as Vector,
+            Calculus.MultiplyVectorXScalar(throwVector,0.01),
+            '')
+        data.addEntity(entity)
+    }
 }

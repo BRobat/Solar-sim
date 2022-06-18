@@ -1,9 +1,21 @@
 <div class="custom-position">
-  <ion-button *ngIf="menuButton" slot="fixed">
+  <ion-button *ngIf="menuButton" slot="fixed" color="{{pauseButtonColor}}" (click)="togglePauseButton()">
     <ion-icon name="pause-outline"></ion-icon>
   </ion-button>
-  <ion-button *ngIf="menuButton" slot="fixed" color="{{panButtonColor}}" (click)="togglePanButton()">
+  <ion-button *ngIf="menuButton && !pauseButton" slot="fixed" color="{{pauseButtonColor}}" (click)="speedUp()">
+    <ion-icon name="play-forward-circle-outline"></ion-icon>
+  </ion-button>
+  <ion-button *ngIf="menuButton && !pauseButton" slot="fixed">
+    {{speed}}
+  </ion-button>
+  <ion-button *ngIf="menuButton && !pauseButton" slot="fixed" color="{{pauseButtonColor}}" (click)="slowDown()">
+    <ion-icon name="play-circle-outline"></ion-icon>
+  </ion-button>
+  <ion-button *ngIf="menuButton " slot="fixed" color="{{panButtonColor}}" (click)="togglePanButton()">
     <ion-icon name="expand-outline"></ion-icon>
+  </ion-button>
+  <ion-button *ngIf="menuButton" slot="fixed" color="{{throwButtonColor}}" (press)="editThrow()">
+    <ion-icon name="earth-outline"></ion-icon>
   </ion-button>
   <ion-button slot="fixed" color="{{menuButtonColor}}" (click)="toggleMenuButton()">
     <ion-icon name="menu-outline"></ion-icon>

@@ -10,15 +10,18 @@ export class Data {
     hashList: Map<string, number[]>;
 
     time: number;
+    dt: number;
 
     hashThreshold: number
 
     constructor() {
         this.time = 0;
+        this.dt = 0.1;
         this.hashThreshold = 50;
     }
 
-    calculateNextFrame(): void {
+    calculateNextFrame(dt: number): void {
+        this.dt = dt;
         this.calculateForces();
         this.moveEntities();
         this.hashEntities();
@@ -58,7 +61,7 @@ export class Data {
                 }
             })
             e1.force = forceSuperposition;
-            e1.updateSpeed();
+            e1.updateSpeed(this.dt);
         })
     }
 
@@ -67,7 +70,7 @@ export class Data {
             return;
         }
         this.entities.forEach((entity: Entity) => {
-            entity.move();
+            entity.move(this.dt);
         })
     }
 
