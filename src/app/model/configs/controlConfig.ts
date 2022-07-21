@@ -7,6 +7,7 @@ export class ControlConfig {
     dt: number;
 
     throwMode: boolean;
+    isThrowMenuOpen: boolean;
 
 
     mouseDown: boolean;

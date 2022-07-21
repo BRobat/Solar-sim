@@ -14,6 +14,7 @@ export class SideMenuService {
       enablePan: false,
       pause: false,
       throwMode: false,
+      isThrowMenuOpen: false,
       dt: 0.5,
       mouseDown: false,
       tempMousePos: { x: 0, y: 0, z: 0 } as Vector,

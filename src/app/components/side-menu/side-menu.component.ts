@@ -106,7 +106,7 @@ export class SideMenuComponent implements OnInit {
   }
 
   editThrow() {
-    console.log('ddd')
+    this.sideMenuService.controlConfig.isThrowMenuOpen = true;
   }
 
 }

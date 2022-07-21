@@ -48,4 +48,8 @@ export class Calculus {
     static module(x: number): number {
         return x > 0 ? x : -x;
     }
+
+    static randomize(x: number, y: number): number {
+        return Math.random() * (y - x) + x;
+    }
 }

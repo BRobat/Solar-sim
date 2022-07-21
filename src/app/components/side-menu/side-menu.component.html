@@ -14,7 +14,10 @@
   <ion-button *ngIf="menuButton " slot="fixed" color="{{panButtonColor}}" (click)="togglePanButton()">
     <ion-icon name="expand-outline"></ion-icon>
   </ion-button>
-  <ion-button *ngIf="menuButton" slot="fixed" color="{{throwButtonColor}}" (press)="editThrow()">
+  <ion-button *ngIf="menuButton" slot="fixed" color="{{throwButtonColor}}" (click)="toggleThrowButton()">
+    <ion-icon name="earth-outline"></ion-icon>
+  </ion-button>
+  <ion-button *ngIf="menuButton" slot="fixed" color="{{throwButtonColor}}" (click)="editThrow()">
     <ion-icon name="earth-outline"></ion-icon>
   </ion-button>
   <ion-button slot="fixed" color="{{menuButtonColor}}" (click)="toggleMenuButton()">

@@ -9,6 +9,7 @@ import { GamePageRoutingModule } from './game-routing.module';
 import { GamePage } from './game.page';
 import { CanvasComponent } from 'src/app/components/canvas/canvas.component';
 import { SideMenuComponent } from 'src/app/components/side-menu/side-menu.component';
+import { ThrowMenuComponent } from 'src/app/components/throw-menu/throw-menu.component';
 
 @NgModule({
   imports: [
@@ -22,6 +23,7 @@ import { SideMenuComponent } from 'src/app/components/side-menu/side-menu.compon
   ],
   declarations: [GamePage,
     CanvasComponent,
-    SideMenuComponent]
+    SideMenuComponent,
+    ThrowMenuComponent]
 })
 export class GamePageModule { }

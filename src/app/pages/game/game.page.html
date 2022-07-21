@@ -4,5 +4,10 @@
   </ion-button>
   <app-side-menu></app-side-menu>
   <app-canvas></app-canvas>
+  <ion-modal [isOpen]="controlConfig.isThrowMenuOpen" (willDismiss)="onThrowMenuDismiss($event)">
+    <ng-template>
+      <app-throw-menu></app-throw-menu>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
