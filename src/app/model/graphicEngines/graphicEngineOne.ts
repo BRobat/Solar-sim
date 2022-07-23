@@ -25,7 +25,7 @@ export class GraphicEngineOne {
             const px = ((Math.tan(camera.angleOfView) * ((rx) / (rz))) * ctx.canvas.width / 4) + ctx.canvas.width / 4;
             const py = ((Math.tan(camera.angleOfView) * ((ry) / (rz))) * ctx.canvas.height / 4) + ctx.canvas.height / 4;
             // taht needs to be changed
-            const pd = e.diameter * (50 / Math.sqrt(rz));
+            const pd = e.diameter * (10 / Math.sqrt(rz));
             ctx.arc(
                 px,
                 py,
@@ -45,4 +45,5 @@ export class GraphicEngineOne {
             '')
         data.addEntity(entity)
     }
+
 }

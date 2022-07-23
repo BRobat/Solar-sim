@@ -5,6 +5,7 @@ export class ThrowConfig {
     massRange: boolean;
     minMaxMass: {lower: number, upper: number};
     countRange: boolean;
-    minMaxCount: {lower: number, upper: number}
+    minMaxCount: {lower: number, upper: number};
+    dispersion: number;
     
 }

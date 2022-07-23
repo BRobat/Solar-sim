@@ -15,7 +15,8 @@ export class ThrowService {
       massRange: false,
       minMaxMass: { lower: 10, upper: 100 },
       countRange: false,
-      minMaxCount: { lower: 10, upper: 20 }
+      minMaxCount: { lower: 10, upper: 20 },
+      dispersion: 10
     }
   }
 }

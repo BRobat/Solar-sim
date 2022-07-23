@@ -178,20 +178,17 @@ export class CanvasComponent implements OnInit {
 
 
   touchup(event): void {
-    console.log(event)
     if (this.controlConfig.mouseDown && this.controlConfig.throwMode && event.changedTouches[0].clientX < window.innerWidth - UsefulConsts.SIDE_MENU_WIDTH && !this.controlConfig.isThrowMenuOpen) {
-      this.addEntity({x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY, z: 0} as Vector, true)
+      this.addEntity({ x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY, z: 0 } as Vector, true)
     }
     this.controlConfig.mouseDown = false;
   }
 
   touchmove(event): void {
-    console.log(event)
+
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
       this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector, this.controlConfig.tempMousePos);
       this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
     }
   }
-
-
 }
