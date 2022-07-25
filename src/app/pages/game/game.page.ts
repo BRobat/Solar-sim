@@ -18,8 +18,12 @@ export class GamePage implements OnInit {
   ngOnInit() {
   }
 
-  onThrowMenuDismiss(event) {
+  onThrowMenuDismiss(event): void {
     this.controlConfig.isThrowMenuOpen = false;
+  }
+
+  onDiscMenuDismiss(event): void {
+    this.controlConfig.isDiscMenuOpen = false;
   }
 
 }

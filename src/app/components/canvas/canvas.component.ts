@@ -1,12 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UsefulConsts } from 'src/app/consts/usefulConsts';
 import { Camera } from 'src/app/model/camera';
 import { ControlConfig } from 'src/app/model/configs/controlConfig';
+import { DiscConfig } from 'src/app/model/configs/discConfig';
 import { ThrowConfig } from 'src/app/model/configs/throwConfig';
 import { Data } from 'src/app/model/data';
 import { Entity } from 'src/app/model/entity';
 import { GraphicEngineOne } from 'src/app/model/graphicEngines/graphicEngineOne';
 import { Vector } from 'src/app/model/vector';
+import { DiscService } from 'src/app/services/disc.service';
 import { SideMenuService } from 'src/app/services/side-menu.service';
 import { ThrowService } from 'src/app/services/throw.service';
 import { Calculus } from 'src/app/utils/calculus';
@@ -17,22 +19,30 @@ import { Physics } from 'src/app/utils/physics';
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.scss'],
 })
-export class CanvasComponent implements OnInit {
+export class CanvasComponent implements OnInit, OnDestroy {
 
   private ctx: CanvasRenderingContext2D;
   private data: Data;
   private camera: Camera;
   private controlConfig: ControlConfig;
   private throwConfig: ThrowConfig;
+  private discConfig: DiscConfig;
 
 
   @ViewChild('canvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
 
+  generateNewDiscSub
 
-  constructor(private sideMenuService: SideMenuService, private throwService: ThrowService) {
+
+  constructor(private sideMenuService: SideMenuService, private throwService: ThrowService, private discService: DiscService) {
     this.controlConfig = sideMenuService.controlConfig;
     this.throwConfig = throwService.throwConfig;
+    this.discConfig = discService.discConfig;
+
+    this.generateNewDiscSub = this.sideMenuService.generateNewDisc.subscribe((x: boolean) => {
+      this.data.generateProtoDisk(this.discConfig);
+    })
   }
 
   ngOnInit() {
@@ -53,6 +63,10 @@ export class CanvasComponent implements OnInit {
     this.requestFrame();
   }
 
+  ngOnDestroy(): void {
+    this.generateNewDiscSub.unsubscribe();
+  }
+
   requestFrame(): void {
     window.requestAnimationFrame(() => {
       // check how to use it properly
@@ -70,22 +84,23 @@ export class CanvasComponent implements OnInit {
 
   initData(): void {
     this.data = new Data();
-    for (let i = 0; i < 1; i++) {
-      // this.data.addEntity(new Entity(500,
-      //   {
-      //     x: window.innerWidth / 2 + (100 * i),
-      //     y: window.innerHeight / 2,
-      //     z: 0.1
-      //   } as Vector,
-      //   {
-      //     x: (0.5 * i),
-      //     y: 0,
-      //     z: 0
-      //   } as Vector,
-      //   ''))
-      // this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: (Math.random() - 0.5) * 2 } as Vector, ''))
-    }
-    // this.data.addEntity(new Entity(5000, { x: window.innerWidth / 4, y: window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: 0 } as Vector, ''))
+    // this.data.generateProtoDisk(this.discConfig)
+    // for (let i = 0; i < 1; i++) {
+    //   // this.data.addEntity(new Entity(500,
+    //   //   {
+    //   //     x: window.innerWidth / 2 + (100 * i),
+    //   //     y: window.innerHeight / 2,
+    //   //     z: 0.1
+    //   //   } as Vector,
+    //   //   {
+    //   //     x: (0.5 * i),
+    //   //     y: 0,
+    //   //     z: 0
+    //   //   } as Vector,
+    //   //   ''))
+    //   // this.data.addEntity(new Entity(Math.random() * 10, { x: Math.random() * window.innerWidth / 2, y: Math.random() * window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: (Math.random() - 0.5) * 2 } as Vector, ''))
+    // }
+    // // this.data.addEntity(new Entity(5000, { x: window.innerWidth / 4, y: window.innerHeight / 2, z: 0 } as Vector, { x: 0, y: 0, z: 0 } as Vector, ''))
   }
 
   initCamera(): void {

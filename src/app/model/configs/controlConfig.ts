@@ -8,6 +8,7 @@ export class ControlConfig {
 
     throwMode: boolean;
     isThrowMenuOpen: boolean;
+    isDiscMenuOpen: boolean;
 
 
     mouseDown: boolean;

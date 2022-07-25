@@ -5,5 +5,6 @@ export class DiscConfig {
     centralMinMaxMass: { lower: number, upper: number };
     internalEnergy: number;
     isSphere: boolean;
-    
+    radius: number;
+
 }

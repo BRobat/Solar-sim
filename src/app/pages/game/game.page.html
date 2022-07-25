@@ -9,5 +9,10 @@
       <app-throw-menu></app-throw-menu>
     </ng-template>
   </ion-modal>
+  <ion-modal [isOpen]="controlConfig.isDiscMenuOpen" (willDismiss)="onDiscMenuDismiss($event)">
+    <ng-template>
+      <app-disc-config></app-disc-config>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>

@@ -108,5 +108,10 @@ export class SideMenuComponent implements OnInit {
   editThrow() {
     this.sideMenuService.controlConfig.isThrowMenuOpen = true;
   }
+  
+  editDisc() {
+    this.sideMenuService.controlConfig.isDiscMenuOpen = true;
+
+  }
 
 }
