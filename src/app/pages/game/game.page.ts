@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ControlConfig } from 'src/app/model/configs/controlConfig';
+import { SideMenuService } from 'src/app/services/side-menu.service';
 
 @Component({
   selector: 'app-game',
@@ -7,9 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GamePage implements OnInit {
 
-  constructor() { }
+  controlConfig: ControlConfig;
+
+  constructor(private sideMenuService: SideMenuService) {
+    this.controlConfig = sideMenuService.controlConfig;
+  }
 
   ngOnInit() {
+  }
+
+  onThrowMenuDismiss(event): void {
+    this.controlConfig.isThrowMenuOpen = false;
+  }
+
+  onDiscMenuDismiss(event): void {
+    this.controlConfig.isDiscMenuOpen = false;
   }
 
 }

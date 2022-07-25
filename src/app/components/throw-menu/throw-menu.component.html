@@ -1,0 +1,56 @@
+<div color="secondary">
+  <ion-item></ion-item>
+  <ion-item (click)="updateMassRange()">
+    <ion-label *ngIf="throwConfig.massRange" color="primary">
+      Random mass
+    </ion-label>
+    <ion-label *ngIf="!throwConfig.massRange" color="primary">
+      Mass
+    </ion-label>
+    <ion-button></ion-button>
+  </ion-item>
+
+  <ion-item *ngIf="!throwConfig.massRange">
+    <ion-label color="primary">
+      {{throwConfig.mass}}
+    </ion-label>
+    <ion-range color="primary" [(ngModel)]="throwConfig.mass" min="1" max="1000">
+      <ion-label color="primary" slot="start">(1)</ion-label>
+      <ion-label color="primary" slot="end">(1000)</ion-label>
+    </ion-range>
+  </ion-item>
+
+
+
+  <ion-item *ngIf="throwConfig.massRange">
+    <ion-label color="primary"> Min/Max
+    </ion-label>
+    <ion-range color="primary" [dualKnobs]="true" [(ngModel)]="throwConfig.minMaxMass" min="1" max="1000">
+      <ion-label color="primary" slot="start">{{throwConfig.minMaxMass.lower}}</ion-label>
+      <ion-label color="primary" slot="end">{{throwConfig.minMaxMass.upper}}</ion-label>
+    </ion-range>
+  </ion-item>
+
+  <ion-item (click)="updateCountRange()">
+    <ion-label color="primary">
+      Count
+    </ion-label>
+  </ion-item>
+
+
+  <ion-item *ngIf="throwConfig.countRange">
+    <ion-label color="primary"> Min/Max
+    </ion-label>
+    <ion-range color="primary" [dualKnobs]="true" [(ngModel)]="throwConfig.minMaxCount" min="1" max="100">
+      <ion-label color="primary" slot="start">{{throwConfig.minMaxCount.lower}}</ion-label>
+      <ion-label color="primary" slot="end">{{throwConfig.minMaxCount.upper}}</ion-label>
+    </ion-range>
+  </ion-item>
+
+  <ion-item *ngIf="!throwConfig.countRange">
+    <ion-label color="primary">
+      1
+    </ion-label>
+  </ion-item>
+
+</div>

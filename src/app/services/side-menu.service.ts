@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { ControlConfig } from '../model/configs/controlConfig';
 import { Vector } from '../model/vector';
 
@@ -9,11 +9,15 @@ export class SideMenuService {
 
   controlConfig: ControlConfig;
 
+  generateNewDisc = new EventEmitter<boolean>()
+
   constructor() {
     this.controlConfig = {
       enablePan: false,
       pause: false,
       throwMode: false,
+      isThrowMenuOpen: false,
+      isDiscMenuOpen: false,
       dt: 0.5,
       mouseDown: false,
       tempMousePos: { x: 0, y: 0, z: 0 } as Vector,
@@ -21,4 +25,5 @@ export class SideMenuService {
       virtualCamPos: { x: 0, y: 0, z: 0 } as Vector
     }
   }
+
 }
