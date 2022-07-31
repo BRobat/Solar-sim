@@ -26,8 +26,10 @@
     "@capacitor/keyboard": "1.2.2",
     "@capacitor/status-bar": "1.0.8",
     "@ionic/angular": "^6.0.0",
+    "@luma.gl/webgl": "^8.5.16",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
+    "twgl.js": "^4.24.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

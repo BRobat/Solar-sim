@@ -7,6 +7,7 @@ import { ThrowConfig } from 'src/app/model/configs/throwConfig';
 import { Data } from 'src/app/model/data';
 import { Entity } from 'src/app/model/entity';
 import { GraphicEngineOne } from 'src/app/model/graphicEngines/graphicEngineOne';
+import { GraphicEngineTwo } from 'src/app/model/graphicEngines/graphicEngineTwo/graphicEngineTwo';
 import { Vector } from 'src/app/model/vector';
 import { DiscService } from 'src/app/services/disc.service';
 import { SideMenuService } from 'src/app/services/side-menu.service';
@@ -21,7 +22,7 @@ import { Physics } from 'src/app/utils/physics';
 })
 export class CanvasComponent implements OnInit, OnDestroy {
 
-  private ctx: CanvasRenderingContext2D;
+  private ctx: WebGL2RenderingContext;
   private data: Data;
   private camera: Camera;
   private controlConfig: ControlConfig;
@@ -51,16 +52,18 @@ export class CanvasComponent implements OnInit, OnDestroy {
     console.log(this.canvas)
 
 
-    this.ctx = this.canvas.nativeElement.getContext('2d');
-    this.ctx.scale(2, 2)
-
+    // this.ctx = this.canvas.nativeElement.getContext('webgl');
+    // this.ctx.scale(2, 2)
+    
     this.initListeners();
-
+    
     this.initCamera();
-
+    
     this.initData();
+    
+    GraphicEngineTwo.init(this.canvas.nativeElement);
 
-    this.requestFrame();
+    // this.requestFrame();
   }
 
   ngOnDestroy(): void {
@@ -73,7 +76,6 @@ export class CanvasComponent implements OnInit, OnDestroy {
       if (!this.controlConfig.pause) {
         this.data.calculateNextFrame(this.controlConfig.dt);
       }
-      this.drawBackgroud();
       this.cameraFollowCenter();
       this.draw2d();
 
@@ -122,13 +124,6 @@ export class CanvasComponent implements OnInit, OnDestroy {
     }
     GraphicEngineOne.drawScene(this.data, this.camera, this.ctx)
 
-  }
-
-  drawBackgroud(): void {
-
-    this.ctx.fillStyle = '#F7FFDD';
-
-    this.ctx.fillRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
   }
 
   cameraFollowCenter(): void {
