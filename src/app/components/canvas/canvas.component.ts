@@ -35,6 +35,8 @@ export class CanvasComponent implements OnInit, OnDestroy {
 
   generateNewDiscSub
 
+  ge: GraphicEngineTwo;
+
 
   constructor(private sideMenuService: SideMenuService, private throwService: ThrowService, private discService: DiscService) {
     this.controlConfig = sideMenuService.controlConfig;
@@ -54,14 +56,16 @@ export class CanvasComponent implements OnInit, OnDestroy {
 
     // this.ctx = this.canvas.nativeElement.getContext('webgl');
     // this.ctx.scale(2, 2)
-    
+
     this.initListeners();
-    
+
     this.initCamera();
-    
+
     this.initData();
-    
-    GraphicEngineTwo.init(this.canvas.nativeElement);
+
+    this.ge = new GraphicEngineTwo(this.canvas)
+
+    this.ge.drawScene()
 
     // this.requestFrame();
   }
