@@ -65,9 +65,9 @@ export class CanvasComponent implements OnInit, OnDestroy {
 
     this.ge = new GraphicEngineTwo(this.canvas)
 
-    this.ge.drawScene()
+    // this.ge.drawScene(this.data, this.camera)
 
-    // this.requestFrame();
+    this.requestFrame();
   }
 
   ngOnDestroy(): void {
@@ -81,7 +81,8 @@ export class CanvasComponent implements OnInit, OnDestroy {
         this.data.calculateNextFrame(this.controlConfig.dt);
       }
       this.cameraFollowCenter();
-      this.draw2d();
+      // this.draw2d();
+      this.ge.drawScene(this.data, this.camera)
 
 
       this.requestFrame();

@@ -14,9 +14,9 @@ export class DiscConfigComponent implements OnInit {
 
   constructor(private sideMenuService: SideMenuService, private discService: DiscService) {
     this.discConfig = discService.discConfig;
-   }
+  }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   createNewDisc() {
     this.sideMenuService.generateNewDisc.emit(true);
@@ -25,6 +25,10 @@ export class DiscConfigComponent implements OnInit {
 
   updateCentralEntity() {
     this.discConfig.centralEntity = !this.discConfig.centralEntity;
+  }
+
+  updateIsSphere() {
+
   }
 
 }

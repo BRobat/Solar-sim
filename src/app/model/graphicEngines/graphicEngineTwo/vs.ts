@@ -5,6 +5,7 @@ export class VertexShaders {
     // It will receive data from a buffer
     in vec4 a_position;
     in vec4 a_color;
+    // in vec4 a_data;
     
     // A matrix to transform the positions by
     uniform mat4 u_matrix;
@@ -16,6 +17,7 @@ export class VertexShaders {
     void main() {
       // Multiply the position by the matrix.
       gl_Position = u_matrix * a_position;
+      gl_PointSize = 10.0;
     
       // Pass the color to the fragment shader.
       v_color = a_color;

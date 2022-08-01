@@ -1,5 +1,9 @@
 import { Calculus } from 'src/app/utils/calculus'
+import { Camera } from '../../camera';
+import { Data } from '../../data';
+import { Entity } from '../../entity';
 import { Matrix4 } from '../../matrix4';
+import { Vector } from '../../vector';
 import { FragmentShaders } from './fs'
 import { VertexShaders } from './vs'
 // import * as webglUtils from '@luma.gl/webgl/dist/es5'
@@ -19,6 +23,10 @@ export class GraphicEngineTwo {
 
   fieldOfViewRadians: number;
   cameraAngleRadians: number;
+
+  positionAttributeLocation: any;
+  dataAttributeLocation: any;
+  colorAttributeLocation: any;
 
   constructor(canvas) {
 
@@ -41,59 +49,26 @@ export class GraphicEngineTwo {
     // Link the two shaders into a program
     this.program = this.createProgram(this.gl, vertexShader, fragmentShader);
 
-    let positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
-    let colorAttributeLocation = this.gl.getAttribLocation(this.program, "a_color");
+    this.positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
+    this.dataAttributeLocation = this.gl.getAttribLocation(this.program, "a_data");
+    this.colorAttributeLocation = this.gl.getAttribLocation(this.program, "a_color");
 
     this.matrixLocation = this.gl.getUniformLocation(this.program, "u_matrix");
 
-    let positionBuffer = this.gl.createBuffer();
 
-
-    this.vao = this.gl.createVertexArray();
-
-    this.gl.bindVertexArray(this.vao);
-
-    this.gl.enableVertexAttribArray(positionAttributeLocation);
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
 
     // set geometry should display points (or temporarily boxes)
-    this.setGeometry(this.gl);
-
-    // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-    var size = 3;          // 3 components per iteration
-    var type = this.gl.FLOAT;   // the data is 32bit floats
-    var normalize = false; // don't normalize the data
-    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-    var offset = 0;        // start at the beginning of the buffer
-    this.gl.vertexAttribPointer(
-      positionAttributeLocation, size, type, normalize, stride, offset);
-
-    // create the color buffer, make it the current ARRAY_BUFFER
-    // and copy in the color values
-    var colorBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-    this.setColors(this.gl);
-
-    // Turn on the attribute
-    this.gl.enableVertexAttribArray(colorAttributeLocation);
-
-    // Tell the attribute how to get data out of colorBuffer (ARRAY_BUFFER)
-    var size = 3;          // 3 components per iteration
-    var type = this.gl.UNSIGNED_BYTE;   // the data is 8bit unsigned bytes
-    var normalize = true;  // convert from 0-255 to 0.0-1.0
-    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next color
-    var offset = 0;        // start at the beginning of the buffer
-    this.gl.vertexAttribPointer(
-      colorAttributeLocation, size, type, normalize, stride, offset);
 
   }
 
-  drawScene() {
+  drawScene(data: Data, camera: Camera) {
 
     if (!this.program) {
       return;
     }
+
+    this.stuffConfig(data);
+
     const numFs = 5;
     const radius = 200;
 
@@ -123,24 +98,29 @@ export class GraphicEngineTwo {
 
     const aspect = (this.gl.canvas.clientWidth + 1) / (this.gl.canvas.clientHeight + 1);
     const zNear = 1;
-    const zFar = 2000;
+    const zFar = 10000;
     const projectionMatrix = Calculus.perspective(this.fieldOfViewRadians, aspect, zNear, zFar);
 
     // Compute the position of the first F
-    const fPosition = [radius, 0, 0];
+    // const fPosition = [0, radius, 0];
+    const fPosition = [0, 0, 0];
 
     // Use matrix math to compute a position on the circle.
-    let cameraMatrix = Calculus.yRotation(this.cameraAngleRadians);
-    cameraMatrix = Calculus.translate(cameraMatrix, 0, 50, radius * 1.5);
-
+    let cameraMatrix = Calculus.yRotation(camera.position.y / 100 + Math.PI / 2);
+    cameraMatrix = Calculus.translate(cameraMatrix, camera.position.z, 0, 0);
     // Get the camera's postion from the matrix we computed
+    // const cameraPosition = [
+    //   cameraMatrix[12],
+    //   cameraMatrix[13],
+    //   cameraMatrix[14],
+    // ];
     const cameraPosition = [
       cameraMatrix[12],
       cameraMatrix[13],
       cameraMatrix[14],
     ];
 
-    const up = [0, 1, 0];
+    const up = [0, 0, 1];
 
     // Compute the camera's matrix using look at.
     cameraMatrix = Calculus.lookAt(cameraPosition, fPosition, up);
@@ -153,20 +133,16 @@ export class GraphicEngineTwo {
     const viewProjectionMatrix = Calculus.multiply(projectionMatrix, viewMatrix);
 
     // Draw 'F's in a circle
-    for (let ii = 0; ii < numFs; ++ii) {
-      const angle = ii * Math.PI * 2 / numFs;
+    for (let ii = 0; ii < data.entities?.length; ++ii) {
+      const matrix = Calculus.translate(viewProjectionMatrix, 1, 1, 1);
 
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      const matrix = Calculus.translate(viewProjectionMatrix, x, 0, z);
-
-      // Set the matrix.
+      // // Set the matrix.
       this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
 
       // Draw the geometry.
-      const primitiveType = this.gl.TRIANGLES;
+      const primitiveType = this.gl.POINTS;
       const offset = 0;
-      const count = 16 * 6;
+      const count = data.entities?.length;
       this.gl.drawArrays(primitiveType, offset, count);
     }
   }
@@ -200,17 +176,76 @@ export class GraphicEngineTwo {
     return undefined;
   };
 
-  setGeometry(gl) {
+  stuffConfig(data: Data) {
 
-    var positions = new Float32Array([
-      // left column front
-      0, 0, 0,
-      0, 150, 0,
-      30, 0, 0,
-      0, 150, 0,
-      30, 150, 0,
-      30, 0, 0,
-    ]);
+    let positionBuffer = this.gl.createBuffer();
+
+
+    this.vao = this.gl.createVertexArray();
+
+    this.gl.bindVertexArray(this.vao);
+
+    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+
+    this.setGeometry(data);
+
+    // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+    var size = 3;          // 3 components per iteration
+    var type = this.gl.FLOAT;   // the data is 32bit floats
+    var normalize = false; // don't normalize the data
+    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+    var offset = 0;        // start at the beginning of the buffer
+    this.gl.vertexAttribPointer(
+      this.positionAttributeLocation, size, type, normalize, stride, offset);
+
+
+    // const dataBuffer = this.gl.createBuffer();
+    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, dataBuffer);
+    // this.setData(data);
+
+    // this.gl.enableVertexAttribArray(this.dataAttributeLocation);
+
+    // var size = 3;          // 3 components per iteration
+    // var type = this.gl.FLOAT;   // the data is 32bit floats
+    // var normalize = false; // don't normalize the data
+    // var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+    // var offset = 0;  
+    // this.gl.vertexAttribPointer(
+    //   this.dataAttributeLocation, size, type, normalize, stride, offset);
+
+
+    // create the color buffer, make it the current ARRAY_BUFFER
+    // and copy in the color values
+    var colorBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+    this.setColors(data);
+
+    // Turn on the attribute
+    this.gl.enableVertexAttribArray(this.colorAttributeLocation);
+
+    // Tell the attribute how to get data out of colorBuffer (ARRAY_BUFFER)
+    var size = 3;          // 3 components per iteration
+    var type = this.gl.UNSIGNED_BYTE;   // the data is 8bit unsigned bytes
+    var normalize = true;  // convert from 0-255 to 0.0-1.0
+    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next color
+    var offset = 0;        // start at the beginning of the buffer
+    this.gl.vertexAttribPointer(
+      this.colorAttributeLocation, size, type, normalize, stride, offset);
+  }
+
+  setGeometry(data: Data) {
+
+    const pos = [];
+
+    data.entities?.forEach((e: Entity) => {
+      pos.push(
+        e.position.x, e.position.y, e.position.z
+      )
+    });
+
+    let positions = new Float32Array(pos);
     let matrix = Calculus.xRotation(Math.PI);
     matrix = Calculus.translate(matrix, -50, -75, -15);
 
@@ -221,21 +256,32 @@ export class GraphicEngineTwo {
       positions[ii + 2] = vector[2];
     }
 
-    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
   };
 
-  setColors(gl) {
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Uint8Array([
-        // left column front
-        200, 70, 120,
-        200, 70, 120,
-        200, 70, 120,
-        200, 70, 120,
-        200, 70, 120,
-        200, 70, 120,
-      ]),
-      gl.STATIC_DRAW);
+  setData(data: Data) {
+
+    const d = [];
+
+    data.entities?.forEach((e: Entity) => {
+      d.push(e.force.x, e.force.y, e.force.z)
+    })
+
+    const dat = new Float32Array(d);
+
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, dat, this.gl.STATIC_DRAW);
+  }
+
+  setColors(data: Data) {
+    const pos = [];
+
+    data.entities?.forEach((e: Entity) => {
+      pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (e.mass / 160))
+    })
+
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Uint8Array(pos),
+      this.gl.STATIC_DRAW);
   };
 }
