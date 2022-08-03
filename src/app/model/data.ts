@@ -2,6 +2,7 @@ import { Calculus } from "../utils/calculus";
 import { CollisionDetection } from "../utils/collisionDetection";
 import { HashUtils } from "../utils/hashUtils";
 import { Physics } from "../utils/physics";
+import { DiscConfig } from "./configs/discConfig";
 import { Entity } from "./entity";
 import { Vector } from "./vector";
 
@@ -10,15 +11,18 @@ export class Data {
     hashList: Map<string, number[]>;
 
     time: number;
+    dt: number;
 
     hashThreshold: number
 
     constructor() {
         this.time = 0;
+        this.dt = 0.1;
         this.hashThreshold = 50;
     }
 
-    calculateNextFrame(): void {
+    calculateNextFrame(dt: number): void {
+        this.dt = dt;
         this.calculateForces();
         this.moveEntities();
         this.hashEntities();
@@ -34,8 +38,45 @@ export class Data {
         }
     }
 
-    generateProtoDisk(): void {
+    generateProtoDisk(discConfig: DiscConfig): void {
 
+        this.clearEntities();
+        this.time = 0;
+
+
+        for (let i = 0; i < discConfig.noEntities; i++) {
+            let theta = Math.PI / 2;
+            if (!discConfig.isSphere) {
+                theta = Math.random() * Math.PI;
+            }
+            const phi = Math.random() * Math.PI * 2;
+            const r = Calculus.randomize(discConfig.radius / 5, discConfig.radius);
+
+            const pos = {
+                x: r * Math.cos(phi) * Math.sin(theta),
+                y: r * Math.sin(phi) * Math.sin(theta),
+                z: r * Math.cos(theta)
+            } as Vector;
+
+            const vel = {
+                x: Math.cos(phi + Math.PI / 2) * discConfig.internalEnergy / Math.pow(r,2),
+                y: Math.sin(phi + Math.PI / 2) * discConfig.internalEnergy / Math.pow(r,2),
+                z: Math.cos(theta) * discConfig.internalEnergy / Math.pow(r,2)
+            } as Vector;
+
+            const mass = Calculus.randomize(discConfig.minMaxMass.lower, discConfig.minMaxMass.upper)
+
+            this.addEntity(new Entity(mass, pos, vel, ''));
+
+        }
+        if (discConfig.centralEntity) {
+            const mass = Calculus.randomize(discConfig.centralMinMaxMass.lower, discConfig.centralMinMaxMass.upper);
+            this.addEntity(new Entity(mass, { x: 0, y: 0, z: 0 } as Vector, { x: 0, y: 0, z: 0 } as Vector, 'Star'));
+        }
+    }
+
+    clearEntities(): void {
+        this.entities = [];
     }
 
     hashEntities(): void {
@@ -58,7 +99,7 @@ export class Data {
                 }
             })
             e1.force = forceSuperposition;
-            e1.updateSpeed();
+            e1.updateSpeed(this.dt);
         })
     }
 
@@ -67,7 +108,7 @@ export class Data {
             return;
         }
         this.entities.forEach((entity: Entity) => {
-            entity.move();
+            entity.move(this.dt);
         })
     }
 

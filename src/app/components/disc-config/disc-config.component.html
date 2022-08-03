@@ -1,0 +1,98 @@
+<div color="secondary">
+  <ion-item>
+    <ion-button (click)="createNewDisc()">Create new protoplanetary disc</ion-button>
+  </ion-item>
+  <ion-item>
+    <ion-label color="primary">
+      Number of entities
+    </ion-label>
+    <ion-button></ion-button>
+  </ion-item>
+
+  <ion-item>
+    <ion-label color="primary">
+      {{discConfig.noEntities}}
+    </ion-label>
+    <ion-range color="primary" [(ngModel)]="discConfig.noEntities" min="1" max="2000">
+      <ion-label color="primary" slot="start">(1)</ion-label>
+      <ion-label color="primary" slot="end">(2000)</ion-label>
+    </ion-range>
+  </ion-item>
+
+  <ion-item>
+    <ion-label color="primary">
+      Entity mass range
+    </ion-label>
+    <ion-button></ion-button>
+  </ion-item>
+
+  <ion-item>
+    <ion-label color="primary"> Min/Max
+    </ion-label>
+    <ion-range color="primary" [dualKnobs]="true" [(ngModel)]="discConfig.minMaxMass" min="1" max="100">
+      <ion-label color="primary" slot="start">{{discConfig.minMaxMass.lower}}</ion-label>
+      <ion-label color="primary" slot="end">{{discConfig.minMaxMass.upper}}</ion-label>
+    </ion-range>
+  </ion-item>
+
+  <ion-item (click)="updateCentralEntity()">
+    <ion-label color="primary">
+      Central entity: {{discConfig.centralEntity}}
+    </ion-label>
+    <ion-button></ion-button>
+  </ion-item>
+
+  <ion-item *ngIf="discConfig.centralEntity">
+    <ion-label color="primary"> Min/Max:
+    </ion-label>
+    <ion-range color="primary" [dualKnobs]="true" [(ngModel)]="discConfig.centralMinMaxMass" min="1000" max="10000">
+      <ion-label color="primary" slot="start">{{discConfig.centralMinMaxMass.lower}}</ion-label>
+      <ion-label color="primary" slot="end">{{discConfig.centralMinMaxMass.upper}}</ion-label>
+    </ion-range>
+  </ion-item>
+
+  <ion-item>
+    <ion-label color="primary">
+      Kinetic energy multiplier:
+    </ion-label>
+  </ion-item>
+
+
+  <ion-item>
+    <ion-label color="primary">
+      {{discConfig.internalEnergy}}
+    </ion-label>
+    <ion-range color="primary" [(ngModel)]="discConfig.internalEnergy" min="1" max="200000">
+      <ion-label color="primary" slot="start">(1)</ion-label>
+      <ion-label color="primary" slot="end">(200000)</ion-label>
+    </ion-range>
+  </ion-item>
+
+  <ion-item>
+    <ion-label color="primary">
+      Radius:
+    </ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label color="primary">
+      {{discConfig.radius}}
+    </ion-label>
+    <ion-range color="primary" [(ngModel)]="discConfig.radius" min="1" max="2000">
+      <ion-label color="primary" slot="start">(1)</ion-label>
+      <ion-label color="primary" slot="end">(2000)</ion-label>
+    </ion-range>
+  </ion-item>
+
+
+</div>
+
+<!-- 
+  noEntities: number;
+minMaxMass: { lower: number, upper: number };
+centralEntity: boolean;
+centralMinMaxMass: { lower: number, upper: number };
+internalEnergy: number;
+isSphere: boolean;
+radius: number; 
+-->

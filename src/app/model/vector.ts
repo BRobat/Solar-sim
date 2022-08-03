@@ -13,4 +13,10 @@ export class Vector {
         this.z += x;
     }
 
+    multiply(x: number): void {
+        this.x *= x;
+        this.y *= x;
+        this.z *= x;
+    }
+
 }

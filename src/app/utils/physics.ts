@@ -33,7 +33,7 @@ export class Physics {
         let Ax = 0;
         let Ay = 0;
         let Az = 0;
-        en.forEach((e: Entity) => {
+        en?.forEach((e: Entity) => {
             Ax += e.position.x * e.mass;
             Ay += e.position.y * e.mass;
             Az += e.position.z * e.mass;

@@ -29,16 +29,16 @@ export class Entity {
 
     // later some things like composition
 
-    move(): void {
-        this.position.x += this.speed.x;
-        this.position.y += this.speed.y;
-        this.position.z += this.speed.z;
+    move(dt: number): void {
+        this.position.x += this.speed.x * dt;
+        this.position.y += this.speed.y * dt;
+        this.position.z += this.speed.z * dt;
     }
     
-    updateSpeed(): void {
-        this.speed.x += this.force.x / this.mass;
-        this.speed.y += this.force.y / this.mass;
-        this.speed.z += this.force.z / this.mass;
+    updateSpeed(dt: number): void {
+        this.speed.x += this.force.x / this.mass * dt;
+        this.speed.y += this.force.y / this.mass * dt;
+        this.speed.z += this.force.z / this.mass * dt;
         this.force = { x: 0, y: 0, z: 0 } as Vector;
     }
 
