@@ -46,7 +46,7 @@ export class Data {
 
         for (let i = 0; i < discConfig.noEntities; i++) {
             let theta = Math.PI / 2;
-            if (discConfig.isSphere) {
+            if (!discConfig.isSphere) {
                 theta = Math.random() * Math.PI;
             }
             const phi = Math.random() * Math.PI * 2;
