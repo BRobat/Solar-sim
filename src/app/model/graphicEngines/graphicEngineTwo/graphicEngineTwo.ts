@@ -140,9 +140,9 @@ export class GraphicEngineTwo {
       this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
 
       // Draw the geometry.
-      const primitiveType = this.gl.POINTS;
+      const primitiveType = this.gl.TRIANGLES;
       const offset = 0;
-      const count = data.entities?.length;
+      const count = data.entities?.length * 36;
       this.gl.drawArrays(primitiveType, offset, count);
     }
   }
@@ -239,10 +239,67 @@ export class GraphicEngineTwo {
 
     const pos = [];
 
+    const cube = [
+      -0.5, -0.5, -0.5,
+      -0.5, 0.5, -0.5,
+      0.5, -0.5, -0.5,
+      -0.5, 0.5, -0.5,
+      0.5, 0.5, -0.5,
+      0.5, -0.5, -0.5,
+
+      -0.5, -0.5, 0.5,
+      0.5, -0.5, 0.5,
+      -0.5, 0.5, 0.5,
+      -0.5, 0.5, 0.5,
+      0.5, -0.5, 0.5,
+      0.5, 0.5, 0.5,
+
+      -0.5, 0.5, -0.5,
+      -0.5, 0.5, 0.5,
+      0.5, 0.5, -0.5,
+      -0.5, 0.5, 0.5,
+      0.5, 0.5, 0.5,
+      0.5, 0.5, -0.5,
+
+      -0.5, -0.5, -0.5,
+      0.5, -0.5, -0.5,
+      -0.5, -0.5, 0.5,
+      -0.5, -0.5, 0.5,
+      0.5, -0.5, -0.5,
+      0.5, -0.5, 0.5,
+
+      -0.5, -0.5, -0.5,
+      -0.5, -0.5, 0.5,
+      -0.5, 0.5, -0.5,
+      -0.5, -0.5, 0.5,
+      -0.5, 0.5, 0.5,
+      -0.5, 0.5, -0.5,
+
+      0.5, -0.5, -0.5,
+      0.5, 0.5, -0.5,
+      0.5, -0.5, 0.5,
+      0.5, -0.5, 0.5,
+      0.5, 0.5, -0.5,
+      0.5, 0.5, 0.5,]
+
     data.entities?.forEach((e: Entity) => {
-      pos.push(
-        e.position.x, e.position.y, e.position.z
-      )
+      cube.forEach((i: number, j: number) => {
+        if (j % 3 === 0) {
+          pos.push(
+            e.position.x + (i * e.diameter / 2 * 10)
+          )
+        }
+        if (j % 3 === 1) {
+          pos.push(
+            e.position.y + (i * e.diameter / 2 * 10)
+          )
+        }
+        if (j % 3 === 2) {
+          pos.push(
+            e.position.z + (i * e.diameter / 2 * 10)
+          )
+        }
+      })
     });
 
     let positions = new Float32Array(pos);
@@ -276,7 +333,9 @@ export class GraphicEngineTwo {
     const pos = [];
 
     data.entities?.forEach((e: Entity) => {
-      pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (e.mass / 160))
+      for (let ii = 0; ii < 36; ii++) {
+        pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (e.mass / 160))
+      }
     })
 
     this.gl.bufferData(
