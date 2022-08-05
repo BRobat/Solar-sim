@@ -136,7 +136,7 @@ export class CanvasComponent implements OnInit, OnDestroy {
       if (this.data.entities) {
         this.camera.position = Physics.getMassCenter(this.data.entities);
       } else {
-        this.camera.position = { x: 0, y: 0, z: 1000 } as Vector;
+        this.camera.position = { x: 0, y: 0, z: 100 } as Vector;
       }
       this.camera.position.z = window.innerHeight;
     }

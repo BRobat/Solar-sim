@@ -28,6 +28,10 @@ export class GraphicEngineTwo {
   dataAttributeLocation: any;
   colorAttributeLocation: any;
 
+  nv: number;
+
+  zFar = 10000;
+
   constructor(canvas) {
 
     this.gl = canvas.nativeElement.getContext('webgl2')
@@ -67,7 +71,7 @@ export class GraphicEngineTwo {
       return;
     }
 
-    this.stuffConfig(data);
+    this.stuffConfig(data, camera);
 
     const numFs = 5;
     const radius = 200;
@@ -98,8 +102,7 @@ export class GraphicEngineTwo {
 
     const aspect = (this.gl.canvas.clientWidth + 1) / (this.gl.canvas.clientHeight + 1);
     const zNear = 1;
-    const zFar = 10000;
-    const projectionMatrix = Calculus.perspective(this.fieldOfViewRadians, aspect, zNear, zFar);
+    const projectionMatrix = Calculus.perspective(this.fieldOfViewRadians, aspect, zNear, this.zFar);
 
     // Compute the position of the first F
     // const fPosition = [0, radius, 0];
@@ -133,18 +136,17 @@ export class GraphicEngineTwo {
     const viewProjectionMatrix = Calculus.multiply(projectionMatrix, viewMatrix);
 
     // Draw 'F's in a circle
-    for (let ii = 0; ii < data.entities?.length; ++ii) {
-      const matrix = Calculus.translate(viewProjectionMatrix, 1, 1, 1);
+    const matrix = Calculus.translate(viewProjectionMatrix, 1, 1, 1);
 
-      // // Set the matrix.
-      this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
+    // // Set the matrix.
+    this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
 
-      // Draw the geometry.
-      const primitiveType = this.gl.TRIANGLES;
-      const offset = 0;
-      const count = data.entities?.length * 36;
-      this.gl.drawArrays(primitiveType, offset, count);
-    }
+    // Draw the geometry.
+    const primitiveType = this.gl.TRIANGLES;
+    const offset = 0;
+    const count = this.nv;
+    this.gl.drawArrays(primitiveType, offset, count);
+
   }
 
   createShader(gl, type, source) {
@@ -176,7 +178,7 @@ export class GraphicEngineTwo {
     return undefined;
   };
 
-  stuffConfig(data: Data) {
+  stuffConfig(data: Data, camera: Camera) {
 
     let positionBuffer = this.gl.createBuffer();
 
@@ -189,7 +191,7 @@ export class GraphicEngineTwo {
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
 
-    this.setGeometry(data);
+    this.setGeometry(data, camera);
 
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     var size = 3;          // 3 components per iteration
@@ -235,71 +237,108 @@ export class GraphicEngineTwo {
       this.colorAttributeLocation, size, type, normalize, stride, offset);
   }
 
-  setGeometry(data: Data) {
+  setGeometry(data: Data, camera: Camera) {
 
     const pos = [];
 
-    const cube = [
-      -0.5, -0.5, -0.5,
-      -0.5, 0.5, -0.5,
-      0.5, -0.5, -0.5,
-      -0.5, 0.5, -0.5,
-      0.5, 0.5, -0.5,
-      0.5, -0.5, -0.5,
+    this.nv = 0;
 
-      -0.5, -0.5, 0.5,
-      0.5, -0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      0.5, -0.5, 0.5,
-      0.5, 0.5, 0.5,
 
-      -0.5, 0.5, -0.5,
-      -0.5, 0.5, 0.5,
-      0.5, 0.5, -0.5,
-      -0.5, 0.5, 0.5,
-      0.5, 0.5, 0.5,
-      0.5, 0.5, -0.5,
-
-      -0.5, -0.5, -0.5,
-      0.5, -0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, -0.5, 0.5,
-      0.5, -0.5, -0.5,
-      0.5, -0.5, 0.5,
-
-      -0.5, -0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, 0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      -0.5, 0.5, -0.5,
-
-      0.5, -0.5, -0.5,
-      0.5, 0.5, -0.5,
-      0.5, -0.5, 0.5,
-      0.5, -0.5, 0.5,
-      0.5, 0.5, -0.5,
-      0.5, 0.5, 0.5,]
 
     data.entities?.forEach((e: Entity) => {
-      cube.forEach((i: number, j: number) => {
-        if (j % 3 === 0) {
-          pos.push(
-            e.position.x + (i * e.diameter / 2 * 10)
-          )
+      // get distance between camera and entity
+      const dist = Calculus.vectorLength(Calculus.vectorDistance(e.position, camera.position)); // check this maybe it should be cartesian distance
+
+      // calculate n of triangles
+
+      let noTriangles = this.zFar / dist;
+      if (noTriangles < 4) {
+        noTriangles = 4;
+      } else if (noTriangles > 12) {
+        noTriangles = 12;
+      } else {
+        noTriangles = Math.floor(noTriangles);
+      }
+
+      // find angles between camera - entity vector and basic plane (?)
+
+      // alpha = acos(a/dist)
+
+      const xa = Math.acos(Calculus.module(camera.position.x - e.position.x) / dist);
+      const ya = Math.acos(Calculus.module(camera.position.y - e.position.y) / dist);
+
+      const points = []
+
+      // create set of points from which [0] is a center
+      for (let ii = 0; ii < noTriangles; ii++) {
+        if (ii === 0) {
+          points.push({ x: 0, y: 0, z: 0 } as Vector);
+        } else {
+          points.push(
+            {
+              x: e.diameter / 2 * Math.cos(Math.PI * 2 * ii / noTriangles),
+              y: e.diameter / 2 * Math.sin(Math.PI * 2 * ii / noTriangles),
+              z: 0
+            } as Vector);
         }
-        if (j % 3 === 1) {
-          pos.push(
-            e.position.y + (i * e.diameter / 2 * 10)
-          )
-        }
-        if (j % 3 === 2) {
-          pos.push(
-            e.position.z + (i * e.diameter / 2 * 10)
-          )
-        }
+      }
+      // rotate each point but [0] in the system where [0] is (0,0,0)
+      points.forEach((p: Vector) => {
+        let pointM = [
+          p.x, 0, 0, 0,
+          0, p.y, 0, 0,
+          0, 0, p.z, 0,
+          0, 0, 0, 1
+        ] as Matrix4
+        pointM = Calculus.xRotate(pointM, xa);
+        pointM = Calculus.xRotate(pointM, ya);
       })
+      // create triangles
+
+
+      for (let ii = 0; ii < noTriangles; ii++) {
+        
+        if (ii < noTriangles - 2) {
+          this.nv += 9;
+          pos.push(
+            e.position.x,
+            e.position.y,
+            e.position.z,
+            e.position.x + points[ii + 1].x,
+            e.position.y + points[ii + 1].y,
+            e.position.z + points[ii + 1].z,
+            e.position.x + points[ii + 2].x,
+            e.position.y + points[ii + 2].y,
+            e.position.z + points[ii + 2].z
+          );
+        } else if (ii === noTriangles - 2) {
+            e.position.x,
+            e.position.y,
+            e.position.z,
+            e.position.x + points[ii + 1].x,
+            e.position.y + points[ii + 1].y,
+            e.position.z + points[ii + 1].z,
+            e.position.x + points[1].x,
+            e.position.y + points[1].y,
+            e.position.z + points[1].z
+        } else {
+          pos.push(
+            e.position.x,
+            e.position.y,
+            e.position.z,
+            e.position.x + points[ii].x,
+            e.position.y + points[ii].y,
+            e.position.z + points[ii].z,
+            e.position.x + points[1].x,
+            e.position.y + points[1].y,
+            e.position.z + points[1].z,
+          );
+        }
+      }
+
+      // rotate plane to be perpendicular to the camera
+
+
     });
 
     let positions = new Float32Array(pos);
@@ -312,6 +351,8 @@ export class GraphicEngineTwo {
       positions[ii + 1] = vector[1];
       positions[ii + 2] = vector[2];
     }
+
+    // maybe return array with numbers of triangles for each entity
 
     this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
   };
