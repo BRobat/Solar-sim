@@ -132,13 +132,11 @@ export class CanvasComponent implements OnInit, OnDestroy {
   }
 
   cameraFollowCenter(): void {
-    if (!this.controlConfig.enablePan) {
-      if (this.data.entities) {
-        this.camera.position = Physics.getMassCenter(this.data.entities);
-      } else {
-        this.camera.position = { x: 0, y: 0, z: 1000 } as Vector;
-      }
-      this.camera.position.z = window.innerHeight;
+    // later to be changed to follow object
+    if (this.data.entities) {
+      this.camera.direction = Physics.getMassCenter(this.data.entities);
+    } else {
+      this.camera.direction = { x: 0, y: 0, z: 0 } as Vector;
     }
   }
 
@@ -166,7 +164,6 @@ export class CanvasComponent implements OnInit, OnDestroy {
   mousedown(event): void {
     this.controlConfig.mouseDown = true;
     this.controlConfig.tempMousePos = { x: event.x, y: event.y, z: 0 } as Vector;
-    this.controlConfig.virtualCamPos = this.camera.position;
   }
 
   mouseup(event): void {
@@ -181,7 +178,10 @@ export class CanvasComponent implements OnInit, OnDestroy {
 
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
       this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.x, y: event.y, z: 0 } as Vector, this.controlConfig.tempMousePos);
-      this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
+      this.controlConfig.tempMousePos = { x: event.x, y: event.y, z: 0 } as Vector;
+      console.log(this.controlConfig.mousePos)
+      this.camera.rotatePhi(this.controlConfig.mousePos.y)
+      this.camera.rotateTheta(this.controlConfig.mousePos.x)
     }
   }
 
@@ -203,7 +203,10 @@ export class CanvasComponent implements OnInit, OnDestroy {
 
     if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
       this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector, this.controlConfig.tempMousePos);
-      this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
+      this.controlConfig.tempMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector;
+      // this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
+      this.camera.rotatePhi(this.controlConfig.mousePos.y)
+      this.camera.rotateTheta(this.controlConfig.mousePos.x)
     }
   }
 }

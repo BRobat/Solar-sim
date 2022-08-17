@@ -55,13 +55,13 @@ export class Data {
             const pos = {
                 x: r * Math.cos(phi) * Math.sin(theta),
                 y: r * Math.sin(phi) * Math.sin(theta),
-                z: r * Math.cos(theta)
+                z: r * Math.cos(theta) / 100
             } as Vector;
 
             const vel = {
                 x: Math.cos(phi + Math.PI / 2) * discConfig.internalEnergy / Math.pow(r,2),
                 y: Math.sin(phi + Math.PI / 2) * discConfig.internalEnergy / Math.pow(r,2),
-                z: Math.cos(theta) * discConfig.internalEnergy / Math.pow(r,2)
+                z: Math.cos(theta) * discConfig.internalEnergy / Math.pow(r,2) / 10
             } as Vector;
 
             const mass = Calculus.randomize(discConfig.minMaxMass.lower, discConfig.minMaxMass.upper)

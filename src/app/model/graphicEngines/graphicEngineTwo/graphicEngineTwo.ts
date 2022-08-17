@@ -103,27 +103,23 @@ export class GraphicEngineTwo {
 
     // Compute the position of the first F
     // const fPosition = [0, radius, 0];
-    const fPosition = [0, 0, 0];
+    const fPosition = [camera.direction.x, camera.direction.y, camera.direction.z];
 
     // Use matrix math to compute a position on the circle.
-    let cameraMatrix = Calculus.yRotation(camera.position.y / 100 + Math.PI / 2);
-    cameraMatrix = Calculus.translate(cameraMatrix, camera.position.z, 0, 0);
-    // Get the camera's postion from the matrix we computed
-    // const cameraPosition = [
-    //   cameraMatrix[12],
-    //   cameraMatrix[13],
-    //   cameraMatrix[14],
-    // ];
-    const cameraPosition = [
-      cameraMatrix[12],
-      cameraMatrix[13],
-      cameraMatrix[14],
+
+    // IMO to be changed
+    let cameraMatrix = Calculus.translation(0, 0, camera.dist)
+
+    let cameraPosition = [
+      camera.dist * Math.cos(camera.theta) * Math.sin(camera.phi) + camera.direction.x,
+      camera.dist * Math.sin(camera.theta) * Math.sin(camera.phi) + camera.direction.y,
+      camera.dist * Math.cos(camera.phi) + camera.direction.z
     ];
 
     const up = [0, 0, 1];
 
-    // Compute the camera's matrix using look at.
-    cameraMatrix = Calculus.lookAt(cameraPosition, fPosition, up);
+      // Compute the camera's matrix using look at.
+      cameraMatrix = Calculus.lookAt(cameraPosition, fPosition, up);
 
     // Make a view matrix from the camera matrix.
     const viewMatrix = Calculus.inverse(cameraMatrix);
@@ -133,18 +129,18 @@ export class GraphicEngineTwo {
     const viewProjectionMatrix = Calculus.multiply(projectionMatrix, viewMatrix);
 
     // Draw 'F's in a circle
-    for (let ii = 0; ii < data.entities?.length; ++ii) {
-      const matrix = Calculus.translate(viewProjectionMatrix, 1, 1, 1);
 
-      // // Set the matrix.
-      this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
+    const matrix = Calculus.translate(viewProjectionMatrix, 1, 1, 1);
 
-      // Draw the geometry.
-      const primitiveType = this.gl.TRIANGLES;
-      const offset = 0;
-      const count = data.entities?.length * 36;
-      this.gl.drawArrays(primitiveType, offset, count);
-    }
+    // // Set the matrix.
+    this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
+
+    // Draw the geometry.
+    const primitiveType = this.gl.TRIANGLES;
+    const offset = 0;
+    const count = data.entities?.length * 36;
+    this.gl.drawArrays(primitiveType, offset, count);
+
   }
 
   createShader(gl, type, source) {
