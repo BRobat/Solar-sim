@@ -79,7 +79,7 @@ export class CanvasComponent implements OnInit, OnDestroy {
 
   initData(): void {
     this.data = new Data();
-    this.data.addEntity(new Entity(1000, ({x: 0,y: 100,z: 0} as Vector), ({x: 0,y: 0,z: 0} as Vector), ''));
+    // this.data.addEntity(new Entity(1000, ({x: 0,y: 100,z: 0} as Vector), ({x: 0,y: 0,z: 0} as Vector), ''));
     // here goes some random stuff (example system fe.)
   }
 
