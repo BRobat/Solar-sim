@@ -34,8 +34,8 @@ export class GraphicEngineTwo {
     this.vertexShaderSource = VertexShaders.vs;
     this.fragmentShaderSource = FragmentShaders.fs;
 
-    this.fieldOfViewRadians = Math.PI / 2;
-    this.cameraAngleRadians = Math.PI / 2;
+    this.fieldOfViewRadians = Math.PI / 3;
+    this.cameraAngleRadians = Math.PI / 3;
     this.init()
   }
 
@@ -67,7 +67,7 @@ export class GraphicEngineTwo {
       return;
     }
 
-    this.stuffConfig(data);
+    this.stuffConfig(data, camera);
 
     const numFs = 5;
     const radius = 200;
@@ -101,25 +101,23 @@ export class GraphicEngineTwo {
     const zFar = 10000;
     const projectionMatrix = Calculus.perspective(this.fieldOfViewRadians, aspect, zNear, zFar);
 
-    // Compute the position of the first F
-    // const fPosition = [0, radius, 0];
-    const fPosition = [camera.direction.x, camera.direction.y, camera.direction.z];
+    // const fPosition = [camera.direction.x, camera.direction.y, camera.direction.z];
 
-    // Use matrix math to compute a position on the circle.
-
-    // IMO to be changed
-    let cameraMatrix = Calculus.translation(0, 0, camera.dist)
 
     let cameraPosition = [
-      camera.dist * Math.cos(camera.theta) * Math.sin(camera.phi) + camera.direction.x,
-      camera.dist * Math.sin(camera.theta) * Math.sin(camera.phi) + camera.direction.y,
-      camera.dist * Math.cos(camera.phi) + camera.direction.z
+      camera.dist * Math.cos(camera.theta) * Math.sin(camera.phi),
+      camera.dist * Math.sin(camera.theta) * Math.sin(camera.phi),
+      camera.dist * Math.cos(camera.phi)
     ];
 
-    const up = [0, 0, 1];
+    const up = [0, 0, 1]
 
-      // Compute the camera's matrix using look at.
-      cameraMatrix = Calculus.lookAt(cameraPosition, fPosition, up);
+    const cameraMatrix = Calculus.lookAt(cameraPosition, [0, 0, 0], up)
+
+    // Compute the camera's matrix using look at.
+    // lookat doesn't work as intended - camera doesn't look at fPosition point
+    // cameraMatrix = Calculus.lookAt(cameraPosition, fPosition, up);
+    console.log(cameraMatrix)
 
     // Make a view matrix from the camera matrix.
     const viewMatrix = Calculus.inverse(cameraMatrix);
@@ -127,8 +125,6 @@ export class GraphicEngineTwo {
     // create a viewProjection matrix. This will both apply perspective
     // AND move the world so that the camera is effectively the origin
     const viewProjectionMatrix = Calculus.multiply(projectionMatrix, viewMatrix);
-
-    // Draw 'F's in a circle
 
     const matrix = Calculus.translate(viewProjectionMatrix, 1, 1, 1);
 
@@ -172,7 +168,7 @@ export class GraphicEngineTwo {
     return undefined;
   };
 
-  stuffConfig(data: Data) {
+  stuffConfig(data: Data, camera: Camera) {
 
     let positionBuffer = this.gl.createBuffer();
 
@@ -185,7 +181,7 @@ export class GraphicEngineTwo {
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
 
-    this.setGeometry(data);
+    this.setGeometry(data, camera);
 
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     var size = 3;          // 3 components per iteration
@@ -231,7 +227,7 @@ export class GraphicEngineTwo {
       this.colorAttributeLocation, size, type, normalize, stride, offset);
   }
 
-  setGeometry(data: Data) {
+  setGeometry(data: Data, camera: Camera) {
 
     const pos = [];
 
@@ -282,17 +278,17 @@ export class GraphicEngineTwo {
       cube.forEach((i: number, j: number) => {
         if (j % 3 === 0) {
           pos.push(
-            e.position.x + (i * e.diameter / 2 * 10)
+            e.position.x + (i * e.diameter / 2 * 10) - camera.direction.x
           )
         }
         if (j % 3 === 1) {
           pos.push(
-            e.position.y + (i * e.diameter / 2 * 10)
+            e.position.y + (i * e.diameter / 2 * 10) - camera.direction.y
           )
         }
         if (j % 3 === 2) {
           pos.push(
-            e.position.z + (i * e.diameter / 2 * 10)
+            e.position.z + (i * e.diameter / 2 * 10) - camera.direction.z
           )
         }
       })
@@ -329,8 +325,10 @@ export class GraphicEngineTwo {
     const pos = [];
 
     data.entities?.forEach((e: Entity) => {
-      for (let ii = 0; ii < 36; ii++) {
+      for (let ii = 0; ii < 12; ii++) {
         pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (e.mass / 160))
+        pos.push(e.mass / 160, 200 - (160), 200 - (e.mass / 160))
+        pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (160))
       }
     })
 
