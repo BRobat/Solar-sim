@@ -49,8 +49,9 @@ export class CanvasComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.canvas.nativeElement.width = window.innerWidth;
-    this.canvas.nativeElement.height = window.innerHeight;
+    console.log(window.devicePixelRatio)
+    this.canvas.nativeElement.width = window.innerWidth * window.devicePixelRatio;
+    this.canvas.nativeElement.height = window.innerHeight * window.devicePixelRatio;
 
     this.initListeners();
     this.initCamera();
@@ -91,6 +92,7 @@ export class CanvasComponent implements OnInit, OnDestroy {
     window.addEventListener('mousedown', (event) => this.mousedown(event));
     window.addEventListener('mousemove', (event) => this.mousemove(event));
     window.addEventListener('mouseup', (event) => this.mouseup(event));
+    window.addEventListener('wheel', (event) => this.scroll(event));
     window.addEventListener('touchstart', (event) => this.touchdown(event), false);
     window.addEventListener('touchmove', (event) => this.touchmove(event), false);
     window.addEventListener('touchend', (event) => this.touchup(event), false);
@@ -149,37 +151,63 @@ export class CanvasComponent implements OnInit, OnDestroy {
 
   mousemove(event): void {
 
-    if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
+    if (this.controlConfig.mouseDown) {
       this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.x, y: event.y, z: 0 } as Vector, this.controlConfig.tempMousePos);
       this.controlConfig.tempMousePos = { x: event.x, y: event.y, z: 0 } as Vector;
-      console.log(this.controlConfig.mousePos)
-      this.camera.rotatePhi(this.controlConfig.mousePos.y)
-      this.camera.rotateTheta(this.controlConfig.mousePos.x)
+
+      this.camera.rotatePhi(-this.controlConfig.mousePos.y)
+      this.camera.rotateTheta(-this.controlConfig.mousePos.x)
     }
+  }
+
+  scroll(event): void {
+    this.camera.zoom(event.deltaY);
   }
 
   touchdown(event): void {
     this.controlConfig.mouseDown = true;
+
     this.controlConfig.tempMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector;
+    this.controlConfig.tempFoPos = { x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector;
+    this.controlConfig.tempFtPos = { x: event.touches[1]?.clientX, y: event.touches[1]?.clientY, z: 0 } as Vector;
     this.controlConfig.virtualCamPos = this.camera.position;
+
   }
 
 
   touchup(event): void {
     if (this.controlConfig.mouseDown && this.controlConfig.throwMode && event.changedTouches[0].clientX < window.innerWidth - UsefulConsts.SIDE_MENU_WIDTH && !this.controlConfig.isThrowMenuOpen) {
-      this.addEntity({ x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY, z: 0 } as Vector, true)
+      // this.addEntity({ x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY, z: 0 } as Vector, true)
     }
     this.controlConfig.mouseDown = false;
   }
 
   touchmove(event): void {
 
-    if (this.controlConfig.mouseDown && this.controlConfig.enablePan) {
-      this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector, this.controlConfig.tempMousePos);
-      this.controlConfig.tempMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector;
-      // this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
-      this.camera.rotatePhi(this.controlConfig.mousePos.y)
-      this.camera.rotateTheta(this.controlConfig.mousePos.x)
+    if (this.controlConfig.mouseDown) {
+
+      if (event.touches[1]) {
+
+        const oldVec = Calculus.cartesianDistance(this.controlConfig.tempFoPos, this.controlConfig.tempFtPos);
+        const newVec = Calculus.cartesianDistance(
+          { x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector,
+          { x: event.touches[1].clientX, y: event.touches[1].clientY, z: 0 } as Vector);
+
+
+        const l = oldVec - newVec
+
+        this.camera.zoom(l)
+        this.controlConfig.tempFoPos = { x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector;
+        this.controlConfig.tempFtPos = { x: event.touches[1].clientX, y: event.touches[1].clientY, z: 0 } as Vector;
+
+      } else {
+        this.controlConfig.mousePos = Calculus.antySuperposition({ x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector, this.controlConfig.tempMousePos);
+
+        this.controlConfig.tempMousePos = { x: event.touches[0].clientX, y: event.touches[0].clientY, z: 0 } as Vector;
+        // this.camera.position = Calculus.superposition(this.controlConfig.virtualCamPos, this.controlConfig.mousePos);
+        this.camera.rotatePhi(-this.controlConfig.mousePos.y)
+        this.camera.rotateTheta(-this.controlConfig.mousePos.x)
+      }
     }
   }
 }

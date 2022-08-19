@@ -22,7 +22,11 @@ export class SideMenuService {
       mouseDown: false,
       tempMousePos: { x: 0, y: 0, z: 0 } as Vector,
       mousePos: { x: 0, y: 0, z: 0 } as Vector,
-      virtualCamPos: { x: 0, y: 0, z: 0 } as Vector
+      virtualCamPos: { x: 0, y: 0, z: 0 } as Vector,
+      tempFoPos: { x: 0, y: 0, z: 0 } as Vector,
+      tempFtPos: { x: 0, y: 0, z: 0 } as Vector,
+      fPos: { x: 0, y: 0, z: 0 } as Vector,
+
     }
   }
 
