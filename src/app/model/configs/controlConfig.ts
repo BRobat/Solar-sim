@@ -15,5 +15,9 @@ export class ControlConfig {
     tempMousePos: Vector;
     mousePos: Vector;
 
+    tempFoPos: Vector;
+    tempFtPos: Vector;
+    fPos: Vector; // ??
+
     virtualCamPos: Vector;
 }

@@ -45,4 +45,14 @@ export class Camera {
             }
         }
     }
+
+    zoom(x): void {
+        this.dist += x;
+        if (this.dist > 10000) {
+            this.dist = 10000;
+        }
+        if (this.dist < 100) {
+            this.dist = 100;
+        }
+    }
 }

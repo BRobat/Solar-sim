@@ -117,7 +117,6 @@ export class GraphicEngineTwo {
     // Compute the camera's matrix using look at.
     // lookat doesn't work as intended - camera doesn't look at fPosition point
     // cameraMatrix = Calculus.lookAt(cameraPosition, fPosition, up);
-    console.log(cameraMatrix)
 
     // Make a view matrix from the camera matrix.
     const viewMatrix = Calculus.inverse(cameraMatrix);
