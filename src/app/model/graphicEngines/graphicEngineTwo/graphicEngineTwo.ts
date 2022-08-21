@@ -4,6 +4,7 @@ import { Data } from '../../data';
 import { Entity } from '../../entity';
 import { Matrix4 } from '../../matrix4';
 import { Vector } from '../../vector';
+import { Cube } from './cube';
 import { FragmentShaders } from './fs'
 import { VertexShaders } from './vs'
 // import * as webglUtils from '@luma.gl/webgl/dist/es5'
@@ -230,72 +231,14 @@ export class GraphicEngineTwo {
 
     const pos = [];
 
-    const cube = [
-      -0.5, -0.5, -0.5,
-      -0.5, 0.5, -0.5,
-      0.5, -0.5, -0.5,
-      -0.5, 0.5, -0.5,
-      0.5, 0.5, -0.5,
-      0.5, -0.5, -0.5,
-
-      -0.5, -0.5, 0.5,
-      0.5, -0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      0.5, -0.5, 0.5,
-      0.5, 0.5, 0.5,
-
-      -0.5, 0.5, -0.5,
-      -0.5, 0.5, 0.5,
-      0.5, 0.5, -0.5,
-      -0.5, 0.5, 0.5,
-      0.5, 0.5, 0.5,
-      0.5, 0.5, -0.5,
-
-      -0.5, -0.5, -0.5,
-      0.5, -0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, -0.5, 0.5,
-      0.5, -0.5, -0.5,
-      0.5, -0.5, 0.5,
-
-      -0.5, -0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, 0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      -0.5, 0.5, -0.5,
-
-      0.5, -0.5, -0.5,
-      0.5, 0.5, -0.5,
-      0.5, -0.5, 0.5,
-      0.5, -0.5, 0.5,
-      0.5, 0.5, -0.5,
-      0.5, 0.5, 0.5,]
+    
 
     data.entities?.forEach((e: Entity) => {
-      cube.forEach((i: number, j: number) => {
-        if (j % 3 === 0) {
-          pos.push(
-            e.position.x + (i * e.diameter / 2 * 10) - camera.direction.x
-          )
-        }
-        if (j % 3 === 1) {
-          pos.push(
-            e.position.y + (i * e.diameter / 2 * 10) - camera.direction.y
-          )
-        }
-        if (j % 3 === 2) {
-          pos.push(
-            e.position.z + (i * e.diameter / 2 * 10) - camera.direction.z
-          )
-        }
-      })
+      pos.push(...Cube.drawCube(e.position,e.diameter,camera))
     });
 
     let positions = new Float32Array(pos);
     let matrix = Calculus.xRotation(Math.PI);
-    matrix = Calculus.translate(matrix, -50, -75, -15);
 
     for (let ii = 0; ii < positions.length; ii += 3) {
       const vector = Calculus.transformVector(matrix, [positions[ii + 0], positions[ii + 1], positions[ii + 2], 1]);
