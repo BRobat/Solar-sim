@@ -4,23 +4,23 @@ import { Vector } from "../../vector";
 import { ShapeCube } from "./shapes/shape_cube";
 
 export class Cube {
-    static drawCube(centerPosition: Vector, diameter: number, camera: Camera): number[] {
+    static drawCube(diameter: number): number[] {
         const positions = [];
 
         ShapeCube.cube.forEach((i: number, j: number) => {
             if (j % 3 === 0) {
                 positions.push(
-                    centerPosition.x + (i * diameter / 2 * 10) - camera.direction.x
+                    (i * diameter / 2 * 10)
                 )
             }
             if (j % 3 === 1) {
                 positions.push(
-                    centerPosition.y + (i * diameter / 2 * 10) - camera.direction.y
+                    (i * diameter / 2 * 10)
                 )
             }
             if (j % 3 === 2) {
                 positions.push(
-                    centerPosition.z + (i * diameter / 2 * 10) - camera.direction.z
+                    (i * diameter / 2 * 10)
                 )
             }
         })

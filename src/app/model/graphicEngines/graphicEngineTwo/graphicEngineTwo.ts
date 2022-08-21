@@ -105,23 +105,19 @@ export class GraphicEngineTwo {
     const zFar = 10000;
     const projectionMatrix = Calculus.perspective(this.fieldOfViewRadians, aspect, zNear, zFar);
 
-    // const fPosition = [camera.direction.x, camera.direction.y, camera.direction.z];
-
-
     let cameraPosition = [
       camera.dist * Math.cos(camera.theta) * Math.sin(camera.phi),
       camera.dist * Math.sin(camera.theta) * Math.sin(camera.phi),
       camera.dist * Math.cos(camera.phi)
     ];
 
+    camera.position.x = cameraPosition[0]
+    camera.position.y = cameraPosition[1]
+    camera.position.z = cameraPosition[2]
+
     const up = [0, 0, 1]
 
     const cameraMatrix = Calculus.lookAt(cameraPosition, [0, 0, 0], up)
-
-    // Compute the camera's matrix using look at.
-    // lookat doesn't work as intended - camera doesn't look at fPosition point
-    // cameraMatrix = Calculus.lookAt(cameraPosition, fPosition, up);
-
     // Make a view matrix from the camera matrix.
     const viewMatrix = Calculus.inverse(cameraMatrix);
 
@@ -225,17 +221,22 @@ export class GraphicEngineTwo {
 
     let positions = [];
 
-    positions.push(...Cube.drawCube(e.position, e.diameter, camera))
+    positions.push(...Cube.drawCube(e.diameter))
 
 
 
-    let matrix = Calculus.yRotation(camera.phi);
+    let matrix = Calculus.lookAt([0, 0, 0], [camera.position.x - e.position.x, camera.position.y - e.position.y, camera.position.z - e.position.z], [0, 0, 1])
+
+    matrix[12] = 0
+    matrix[13] = 0
+    matrix[14] = 0
+
 
     for (let ii = 0; ii < positions.length; ii += 3) {
       const vector = Calculus.transformVector(matrix, [positions[ii + 0], positions[ii + 1], positions[ii + 2], 1]);
-      positions[ii + 0] = vector[0];
-      positions[ii + 1] = vector[1];
-      positions[ii + 2] = vector[2];
+      positions[ii + 0] = vector[0] + e.position.x;
+      positions[ii + 1] = vector[1] + e.position.y;
+      positions[ii + 2] = vector[2] + e.position.z;
     }
 
     return positions
