@@ -1,3 +1,4 @@
+import { Calculus } from "src/app/utils/calculus";
 import { Camera } from "../../camera";
 import { Vector } from "../../vector";
 import { ShapeCube } from "./shapes/shape_cube";
@@ -23,6 +24,7 @@ export class Cube {
                 )
             }
         })
+
         return positions;
     }
 }

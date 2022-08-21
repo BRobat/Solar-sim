@@ -17,6 +17,9 @@ export class GraphicEngineTwo {
   vertexShaderSource;
   fragmentShaderSource;
 
+
+  viewProjectionMatrix;
+
   // vao <=> vertex array object
   vao: any;
 
@@ -124,9 +127,9 @@ export class GraphicEngineTwo {
 
     // create a viewProjection matrix. This will both apply perspective
     // AND move the world so that the camera is effectively the origin
-    const viewProjectionMatrix = Calculus.multiply(projectionMatrix, viewMatrix);
+    this.viewProjectionMatrix = Calculus.multiply(projectionMatrix, viewMatrix);
 
-    const matrix = Calculus.translate(viewProjectionMatrix, 1, 1, 1);
+    const matrix = Calculus.translate(this.viewProjectionMatrix, 1, 1, 1);
 
     // // Set the matrix.
     this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
@@ -224,8 +227,9 @@ export class GraphicEngineTwo {
 
     positions.push(...Cube.drawCube(e.position, e.diameter, camera))
 
-    let matrix = Calculus.xRotation(Math.PI);
-    matrix = Calculus.lookAt([matrix[12], matrix[13], matrix[14]], [camera.position.x, camera.position.y, camera.position.z], [0, 0, 1])
+
+
+    let matrix = Calculus.yRotation(camera.phi);
 
     for (let ii = 0; ii < positions.length; ii += 3) {
       const vector = Calculus.transformVector(matrix, [positions[ii + 0], positions[ii + 1], positions[ii + 2], 1]);
