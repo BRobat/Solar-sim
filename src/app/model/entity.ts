@@ -6,6 +6,7 @@ export class Entity {
     speed: Vector;
     diameter: number;
     density: number;
+    triangles: number;
     name: string;
     force: Vector;
     uuid: string;
@@ -23,6 +24,7 @@ export class Entity {
         this.position = position;
         this.speed = speed;
         this.name = name;
+        this.triangles = 0;
 
         this.updateDiameter();
     }

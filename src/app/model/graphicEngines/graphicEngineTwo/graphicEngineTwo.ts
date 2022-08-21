@@ -4,6 +4,8 @@ import { Data } from '../../data';
 import { Entity } from '../../entity';
 import { Matrix4 } from '../../matrix4';
 import { Vector } from '../../vector';
+import { Cube } from './cube';
+import { Disc } from './disc';
 import { FragmentShaders } from './fs'
 import { VertexShaders } from './vs'
 // import * as webglUtils from '@luma.gl/webgl/dist/es5'
@@ -16,13 +18,19 @@ export class GraphicEngineTwo {
   vertexShaderSource;
   fragmentShaderSource;
 
+
+  viewProjectionMatrix;
+
   // vao <=> vertex array object
   vao: any;
+
 
   matrixLocation: Matrix4;
 
   fieldOfViewRadians: number;
   cameraAngleRadians: number;
+
+  nv: number = 0;
 
   positionAttributeLocation: any;
   dataAttributeLocation: any;
@@ -101,39 +109,41 @@ export class GraphicEngineTwo {
     const zFar = 10000;
     const projectionMatrix = Calculus.perspective(this.fieldOfViewRadians, aspect, zNear, zFar);
 
-    // const fPosition = [camera.direction.x, camera.direction.y, camera.direction.z];
-
-
     let cameraPosition = [
       camera.dist * Math.cos(camera.theta) * Math.sin(camera.phi),
       camera.dist * Math.sin(camera.theta) * Math.sin(camera.phi),
       camera.dist * Math.cos(camera.phi)
     ];
 
+    camera.position.x = cameraPosition[0]
+    camera.position.y = cameraPosition[1]
+    camera.position.z = cameraPosition[2]
+
     const up = [0, 0, 1]
 
     const cameraMatrix = Calculus.lookAt(cameraPosition, [0, 0, 0], up)
-
-    // Compute the camera's matrix using look at.
-    // lookat doesn't work as intended - camera doesn't look at fPosition point
-    // cameraMatrix = Calculus.lookAt(cameraPosition, fPosition, up);
-
     // Make a view matrix from the camera matrix.
     const viewMatrix = Calculus.inverse(cameraMatrix);
 
     // create a viewProjection matrix. This will both apply perspective
     // AND move the world so that the camera is effectively the origin
-    const viewProjectionMatrix = Calculus.multiply(projectionMatrix, viewMatrix);
+    this.viewProjectionMatrix = Calculus.multiply(projectionMatrix, viewMatrix);
 
-    const matrix = Calculus.translate(viewProjectionMatrix, 1, 1, 1);
+    const matrix = Calculus.translate(this.viewProjectionMatrix, 1, 1, 1);
 
     // // Set the matrix.
     this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
 
+    let noTriangles = 0
+
+    data.entities?.forEach((e: Entity) => {
+      noTriangles += e.triangles;
+    })
+
     // Draw the geometry.
     const primitiveType = this.gl.TRIANGLES;
     const offset = 0;
-    const count = data.entities?.length * 36;
+    const count = noTriangles * 3;
     this.gl.drawArrays(primitiveType, offset, count);
 
   }
@@ -180,7 +190,14 @@ export class GraphicEngineTwo {
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
 
-    this.setGeometry(data, camera);
+    // create positions for draw
+
+    const positions = []
+    data.entities?.forEach((e: Entity) => {
+      positions.push(...this.setGeometry(e, camera));
+    })
+
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
 
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     var size = 3;          // 3 components per iteration
@@ -190,22 +207,6 @@ export class GraphicEngineTwo {
     var offset = 0;        // start at the beginning of the buffer
     this.gl.vertexAttribPointer(
       this.positionAttributeLocation, size, type, normalize, stride, offset);
-
-
-    // const dataBuffer = this.gl.createBuffer();
-    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, dataBuffer);
-    // this.setData(data);
-
-    // this.gl.enableVertexAttribArray(this.dataAttributeLocation);
-
-    // var size = 3;          // 3 components per iteration
-    // var type = this.gl.FLOAT;   // the data is 32bit floats
-    // var normalize = false; // don't normalize the data
-    // var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-    // var offset = 0;  
-    // this.gl.vertexAttribPointer(
-    //   this.dataAttributeLocation, size, type, normalize, stride, offset);
-
 
     // create the color buffer, make it the current ARRAY_BUFFER
     // and copy in the color values
@@ -226,86 +227,37 @@ export class GraphicEngineTwo {
       this.colorAttributeLocation, size, type, normalize, stride, offset);
   }
 
-  setGeometry(data: Data, camera: Camera) {
+  setGeometry(e: Entity, camera: Camera): number[] {
 
-    const pos = [];
+    let positions = [];
 
-    const cube = [
-      -0.5, -0.5, -0.5,
-      -0.5, 0.5, -0.5,
-      0.5, -0.5, -0.5,
-      -0.5, 0.5, -0.5,
-      0.5, 0.5, -0.5,
-      0.5, -0.5, -0.5,
+    // positions.push(...Cube.drawCube(e.diameter))
+    // e.triangles = 12;
 
-      -0.5, -0.5, 0.5,
-      0.5, -0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      0.5, -0.5, 0.5,
-      0.5, 0.5, 0.5,
+    positions.push(...Disc.drawDisc(e, camera))
 
-      -0.5, 0.5, -0.5,
-      -0.5, 0.5, 0.5,
-      0.5, 0.5, -0.5,
-      -0.5, 0.5, 0.5,
-      0.5, 0.5, 0.5,
-      0.5, 0.5, -0.5,
 
-      -0.5, -0.5, -0.5,
-      0.5, -0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, -0.5, 0.5,
-      0.5, -0.5, -0.5,
-      0.5, -0.5, 0.5,
 
-      -0.5, -0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, 0.5, -0.5,
-      -0.5, -0.5, 0.5,
-      -0.5, 0.5, 0.5,
-      -0.5, 0.5, -0.5,
+    let matrix = Calculus.lookAt([0, 0, 0], [camera.position.x - e.position.x, camera.position.y - e.position.y, camera.position.z - e.position.z], [0, 0, 1])
+    // let matrix = Calculus.xRotation(0);
+    // matrix = Calculus.yRotate(matrix,0)
 
-      0.5, -0.5, -0.5,
-      0.5, 0.5, -0.5,
-      0.5, -0.5, 0.5,
-      0.5, -0.5, 0.5,
-      0.5, 0.5, -0.5,
-      0.5, 0.5, 0.5,]
+    matrix[12] = 0
+    matrix[13] = 0
+    matrix[14] = 0
 
-    data.entities?.forEach((e: Entity) => {
-      cube.forEach((i: number, j: number) => {
-        if (j % 3 === 0) {
-          pos.push(
-            e.position.x + (i * e.diameter / 2 * 10) - camera.direction.x
-          )
-        }
-        if (j % 3 === 1) {
-          pos.push(
-            e.position.y + (i * e.diameter / 2 * 10) - camera.direction.y
-          )
-        }
-        if (j % 3 === 2) {
-          pos.push(
-            e.position.z + (i * e.diameter / 2 * 10) - camera.direction.z
-          )
-        }
-      })
-    });
-
-    let positions = new Float32Array(pos);
-    let matrix = Calculus.xRotation(Math.PI);
-    matrix = Calculus.translate(matrix, -50, -75, -15);
 
     for (let ii = 0; ii < positions.length; ii += 3) {
       const vector = Calculus.transformVector(matrix, [positions[ii + 0], positions[ii + 1], positions[ii + 2], 1]);
-      positions[ii + 0] = vector[0];
-      positions[ii + 1] = vector[1];
-      positions[ii + 2] = vector[2];
+      positions[ii + 0] = vector[0] + e.position.x;
+      positions[ii + 1] = vector[1] + e.position.y;
+      positions[ii + 2] = vector[2] + e.position.z;
     }
 
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
-  };
+    return positions
+  }
+
+
 
   setData(data: Data) {
 
@@ -324,10 +276,10 @@ export class GraphicEngineTwo {
     const pos = [];
 
     data.entities?.forEach((e: Entity) => {
-      for (let ii = 0; ii < 12; ii++) {
-        pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (e.mass / 160))
-        pos.push(e.mass / 160, 200 - (160), 200 - (e.mass / 160))
-        pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (160))
+      for (let ii = 0; ii < e.triangles; ii++) {
+        pos.push(255 / Math.pow(e.speed.y, 2), 255 / Math.pow(e.speed.y, 2), 255 / Math.pow(e.speed.z, 2))
+        pos.push(50, 250, 250)
+        pos.push(50, 250, 250)
       }
     })
 
