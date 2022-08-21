@@ -181,7 +181,14 @@ export class GraphicEngineTwo {
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
 
-    this.setGeometry(data, camera);
+    // create positions for draw
+
+    const positions = []
+    data.entities?.forEach((e: Entity) => {
+      positions.push(...this.setGeometry(e, camera));
+    })
+
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
 
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     var size = 3;          // 3 components per iteration
@@ -191,22 +198,6 @@ export class GraphicEngineTwo {
     var offset = 0;        // start at the beginning of the buffer
     this.gl.vertexAttribPointer(
       this.positionAttributeLocation, size, type, normalize, stride, offset);
-
-
-    // const dataBuffer = this.gl.createBuffer();
-    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, dataBuffer);
-    // this.setData(data);
-
-    // this.gl.enableVertexAttribArray(this.dataAttributeLocation);
-
-    // var size = 3;          // 3 components per iteration
-    // var type = this.gl.FLOAT;   // the data is 32bit floats
-    // var normalize = false; // don't normalize the data
-    // var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-    // var offset = 0;  
-    // this.gl.vertexAttribPointer(
-    //   this.dataAttributeLocation, size, type, normalize, stride, offset);
-
 
     // create the color buffer, make it the current ARRAY_BUFFER
     // and copy in the color values
@@ -227,18 +218,14 @@ export class GraphicEngineTwo {
       this.colorAttributeLocation, size, type, normalize, stride, offset);
   }
 
-  setGeometry(data: Data, camera: Camera) {
+  setGeometry(e: Entity, camera: Camera): number[] {
 
-    const pos = [];
+    let positions = [];
 
-    
+    positions.push(...Cube.drawCube(e.position, e.diameter, camera))
 
-    data.entities?.forEach((e: Entity) => {
-      pos.push(...Cube.drawCube(e.position,e.diameter,camera))
-    });
-
-    let positions = new Float32Array(pos);
     let matrix = Calculus.xRotation(Math.PI);
+    matrix = Calculus.lookAt([matrix[12], matrix[13], matrix[14]], [camera.position.x, camera.position.y, camera.position.z], [0, 0, 1])
 
     for (let ii = 0; ii < positions.length; ii += 3) {
       const vector = Calculus.transformVector(matrix, [positions[ii + 0], positions[ii + 1], positions[ii + 2], 1]);
@@ -247,8 +234,10 @@ export class GraphicEngineTwo {
       positions[ii + 2] = vector[2];
     }
 
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
-  };
+    return positions
+  }
+
+
 
   setData(data: Data) {
 

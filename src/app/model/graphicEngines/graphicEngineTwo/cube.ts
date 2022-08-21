@@ -1,53 +1,12 @@
 import { Camera } from "../../camera";
 import { Vector } from "../../vector";
+import { ShapeCube } from "./shapes/shape_cube";
 
 export class Cube {
     static drawCube(centerPosition: Vector, diameter: number, camera: Camera): number[] {
         const positions = [];
-        const cube = [
-            -0.5, -0.5, -0.5,
-            -0.5, 0.5, -0.5,
-            0.5, -0.5, -0.5,
-            -0.5, 0.5, -0.5,
-            0.5, 0.5, -0.5,
-            0.5, -0.5, -0.5,
 
-            -0.5, -0.5, 0.5,
-            0.5, -0.5, 0.5,
-            -0.5, 0.5, 0.5,
-            -0.5, 0.5, 0.5,
-            0.5, -0.5, 0.5,
-            0.5, 0.5, 0.5,
-
-            -0.5, 0.5, -0.5,
-            -0.5, 0.5, 0.5,
-            0.5, 0.5, -0.5,
-            -0.5, 0.5, 0.5,
-            0.5, 0.5, 0.5,
-            0.5, 0.5, -0.5,
-
-            -0.5, -0.5, -0.5,
-            0.5, -0.5, -0.5,
-            -0.5, -0.5, 0.5,
-            -0.5, -0.5, 0.5,
-            0.5, -0.5, -0.5,
-            0.5, -0.5, 0.5,
-
-            -0.5, -0.5, -0.5,
-            -0.5, -0.5, 0.5,
-            -0.5, 0.5, -0.5,
-            -0.5, -0.5, 0.5,
-            -0.5, 0.5, 0.5,
-            -0.5, 0.5, -0.5,
-
-            0.5, -0.5, -0.5,
-            0.5, 0.5, -0.5,
-            0.5, -0.5, 0.5,
-            0.5, -0.5, 0.5,
-            0.5, 0.5, -0.5,
-            0.5, 0.5, 0.5,];
-
-        cube.forEach((i: number, j: number) => {
+        ShapeCube.cube.forEach((i: number, j: number) => {
             if (j % 3 === 0) {
                 positions.push(
                     centerPosition.x + (i * diameter / 2 * 10) - camera.direction.x
