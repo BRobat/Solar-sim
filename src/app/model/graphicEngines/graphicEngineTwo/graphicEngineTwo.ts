@@ -5,6 +5,7 @@ import { Entity } from '../../entity';
 import { Matrix4 } from '../../matrix4';
 import { Vector } from '../../vector';
 import { Cube } from './cube';
+import { Disc } from './disc';
 import { FragmentShaders } from './fs'
 import { VertexShaders } from './vs'
 // import * as webglUtils from '@luma.gl/webgl/dist/es5'
@@ -23,10 +24,13 @@ export class GraphicEngineTwo {
   // vao <=> vertex array object
   vao: any;
 
+
   matrixLocation: Matrix4;
 
   fieldOfViewRadians: number;
   cameraAngleRadians: number;
+
+  nv: number = 0;
 
   positionAttributeLocation: any;
   dataAttributeLocation: any;
@@ -130,10 +134,16 @@ export class GraphicEngineTwo {
     // // Set the matrix.
     this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix);
 
+    let noTriangles = 0
+
+    data.entities?.forEach((e: Entity) => {
+      noTriangles += e.triangles;
+    })
+
     // Draw the geometry.
     const primitiveType = this.gl.TRIANGLES;
     const offset = 0;
-    const count = data.entities?.length * 36;
+    const count = noTriangles * 3;
     this.gl.drawArrays(primitiveType, offset, count);
 
   }
@@ -221,11 +231,16 @@ export class GraphicEngineTwo {
 
     let positions = [];
 
-    positions.push(...Cube.drawCube(e.diameter))
+    // positions.push(...Cube.drawCube(e.diameter))
+    // e.triangles = 12;
+
+    positions.push(...Disc.drawDisc(e, camera))
 
 
 
     let matrix = Calculus.lookAt([0, 0, 0], [camera.position.x - e.position.x, camera.position.y - e.position.y, camera.position.z - e.position.z], [0, 0, 1])
+    // let matrix = Calculus.xRotation(0);
+    // matrix = Calculus.yRotate(matrix,0)
 
     matrix[12] = 0
     matrix[13] = 0
@@ -261,7 +276,7 @@ export class GraphicEngineTwo {
     const pos = [];
 
     data.entities?.forEach((e: Entity) => {
-      for (let ii = 0; ii < 12; ii++) {
+      for (let ii = 0; ii < e.triangles; ii++) {
         pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (e.mass / 160))
         pos.push(e.mass / 160, 200 - (160), 200 - (e.mass / 160))
         pos.push(e.mass / 160, 200 - (e.mass / 160), 200 - (160))
