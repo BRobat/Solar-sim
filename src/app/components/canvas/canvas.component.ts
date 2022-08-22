@@ -69,10 +69,10 @@ export class CanvasComponent implements OnInit, OnDestroy {
   requestFrame(): void {
     window.requestAnimationFrame(() => {
       // check how to use it properly (???)
-      this.cameraFollowCenter();
       if (!this.controlConfig.pause) {
         this.data.calculateNextFrame(this.controlConfig.dt);
       }
+      this.cameraFollowCenter();
       this.ge.drawScene(this.data, this.camera)
       this.requestFrame();
     })
@@ -109,7 +109,7 @@ export class CanvasComponent implements OnInit, OnDestroy {
   cameraFollowCenter(): void {
     // later to be changed to follow object
     if (this.data.entities) {
-      this.camera.direction = Physics.getMassCenter(this.data.entities);
+      this.camera.direction = this.data.massCenter;
     } else {
       this.camera.direction = { x: 0, y: 0, z: 0 } as Vector;
     }

@@ -11,7 +11,6 @@ export class Entity {
     force: Vector;
     uuid: string;
 
-
     isSmall: boolean;
 
     constructor(
@@ -24,6 +23,7 @@ export class Entity {
         this.position = position;
         this.speed = speed;
         this.name = name;
+        this.isSmall = false;
         this.triangles = 0;
 
         this.updateDiameter();
@@ -36,7 +36,7 @@ export class Entity {
         this.position.y += this.speed.y * dt;
         this.position.z += this.speed.z * dt;
     }
-    
+
     updateSpeed(dt: number): void {
         this.speed.x += this.force.x / this.mass * dt;
         this.speed.y += this.force.y / this.mass * dt;

@@ -10,8 +10,12 @@ export class Data {
     entities: Entity[];
     hashList: Map<string, number[]>;
 
+    entityCloud: Entity;
+
     time: number;
     dt: number;
+
+    massCenter: Vector;
 
     hashThreshold: number
 
@@ -19,10 +23,21 @@ export class Data {
         this.time = 0;
         this.dt = 0.1;
         this.hashThreshold = 50;
+
+        this.entityCloud = new Entity(
+            0.01,
+            { x: 0.1, y: 0, z: 0 } as Vector,
+            { x: 0, y: 0.1, z: 0 } as Vector,
+            ''
+        )
+
+        this.massCenter = { x: 0, y: 0, z: 0 } as Vector;
     }
 
     calculateNextFrame(dt: number): void {
         this.dt = dt;
+        this.calculateMassCenter();
+        this.setEntityCloud()
         this.calculateForces();
         this.moveEntities();
         this.hashEntities();
@@ -59,9 +74,9 @@ export class Data {
             } as Vector;
 
             const vel = {
-                x: Math.cos(phi + Math.PI / 2) * discConfig.internalEnergy / Math.pow(r,2),
-                y: Math.sin(phi + Math.PI / 2) * discConfig.internalEnergy / Math.pow(r,2),
-                z: Math.cos(theta) * discConfig.internalEnergy / Math.pow(r,2) / 10
+                x: Math.cos(phi + Math.PI / 2) * discConfig.internalEnergy / Math.pow(r, 2),
+                y: Math.sin(phi + Math.PI / 2) * discConfig.internalEnergy / Math.pow(r, 2),
+                z: Math.cos(theta) * discConfig.internalEnergy / Math.pow(r, 2) / 10
             } as Vector;
 
             const mass = Calculus.randomize(discConfig.minMaxMass.lower, discConfig.minMaxMass.upper)
@@ -94,10 +109,13 @@ export class Data {
         this.entities.forEach((e1: Entity) => {
             let forceSuperposition = { x: 0, y: 0, z: 0 } as Vector;
             this.entities.forEach((e2: Entity) => {
-                if (e1 != e2) {
+                if (e1 != e2 && !e2.isSmall) {
                     forceSuperposition = Calculus.superposition(forceSuperposition, Physics.calculateAttractiveForce(e1, e2));
                 }
             })
+            if (!CollisionDetection.checkCollision(e1,this.entityCloud)) {
+                forceSuperposition = Calculus.superposition(forceSuperposition, Physics.calculateAttractiveForce(e1, this.entityCloud));
+            }
             e1.force = forceSuperposition;
             e1.updateSpeed(this.dt);
         })
@@ -141,6 +159,25 @@ export class Data {
             })
         })
 
+    }
+
+    setEntityCloud() {
+        let entityCloudMass = 0
+        this.entities?.forEach((e: Entity) => {
+            if (e.mass < 15) {
+                e.isSmall = true;
+                entityCloudMass += e.mass;
+            } else {
+                e.isSmall = false;
+            }
+        })
+        this.entityCloud.mass = entityCloudMass;
+        this.entityCloud.position = this.massCenter;
+
+    }
+
+    calculateMassCenter() {
+        this.massCenter = Physics.getMassCenter(this.entities)
     }
 
     postCollisionEffects(): void {
