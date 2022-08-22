@@ -277,7 +277,7 @@ export class GraphicEngineTwo {
 
     data.entities?.forEach((e: Entity) => {
       for (let ii = 0; ii < e.triangles; ii++) {
-        pos.push(255 / Math.pow(e.speed.y, 2), 255 / Math.pow(e.speed.y, 2), 255 / Math.pow(e.speed.z, 2))
+        pos.push(e.mass / 50000 * 255 , 255 / Math.pow(e.mass, 2), 255 / Math.pow(e.diameter, 2))
         pos.push(50, 250, 250)
         pos.push(50, 250, 250)
       }
