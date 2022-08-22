@@ -4,7 +4,6 @@ import { HashUtils } from "../utils/hashUtils";
 import { Physics } from "../utils/physics";
 import { DiscConfig } from "./configs/discConfig";
 import { Entity } from "./entity";
-import { EntityCloud } from "./entityCloud";
 import { Vector } from "./vector";
 
 export class Data {
